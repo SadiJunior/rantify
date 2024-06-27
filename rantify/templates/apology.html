@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+    <section id="apology">
+
+        <div class="container-fluid d-flex justify-content-center text-center p-5">
+            <div class="col">
+                <div class="row">
+                    <h1 class="display-1 fw-bold">{{ code }}</h1>
+                </div>
+                <div class="row">
+                    <h5 class="fw-bold">Error: {{ description }}</h4>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+{% endblock %}
