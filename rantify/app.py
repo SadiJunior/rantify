@@ -1,7 +1,6 @@
 import requests
 import spotipy
 import os
-import json
 
 from flask import (
     Flask, redirect, render_template, request, session, jsonify
@@ -12,12 +11,19 @@ from dotenv import load_dotenv
 
 from helpers import session_helper, spotify_helper
 from helpers.spotify_helper import SpotifyClient, SpotifyPlaylist, SpotifyUser
+from helpers.llm_helper import LLMClient
+
+
+LLM_MODEL = "gpt-3.5-turbo"
+
 
 # Loads the .env file
 load_dotenv()
 
+
 # Create application
 app = Flask(__name__)
+
 
 # Configure application cookies
 app.secret_key = os.getenv("SECRET_KEY")
@@ -27,12 +33,13 @@ app.config["SESSION_COOKIE_SECURE"] = True
 
 # Debug configs
 app.jinja_env.auto_reload = True
-app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Configure server-side session
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_USE_SIGNER"] = True
 app.config["SESSION_TYPE"] = "filesystem"  # Use Redis or another backend for production
+
 
 # Initializes session
 Session(app)
@@ -40,11 +47,14 @@ Session(app)
 
 spotify_oauth = spotify_helper.create_spotify_oauth()
 
+llm_client = LLMClient(model=LLM_MODEL)
+
 
 @app.route("/")
 @session_helper.auth_required()
 @session_helper.validate_token(spotify_oauth)
 def index():
+    """Index page of the application."""
     access_token = session_helper.get_access_token()
     spotify = SpotifyClient(access_token)
 
@@ -60,20 +70,22 @@ def index():
 @app.route("/login")
 @session_helper.redirect_if_auth("/")
 def login():
+    """Login page of the application."""
     return render_template("login.html")
 
 
 @app.route("/authorize", methods=["POST"])
 @session_helper.redirect_if_auth("/")
 def authorize():
-    """Runs Autorization Code Flow for Logging user in Spotify Account"""
+    """Runs Autorization Code Flow for Logging user in Spotify Account."""
     authorize_url = spotify_oauth.get_authorize_url()
     return redirect(authorize_url)
 
 
 @app.route("/callback")
 @session_helper.redirect_if_auth("/")
-def callback():        
+def callback():
+    """Callback from Spotify Authorization Code Flow."""
     error = request.args.get("error")
     if error:
         return apology("Could not authorize your Spotify Account, please try again.", 400)
@@ -109,6 +121,7 @@ def logout():
 @session_helper.auth_required()
 @session_helper.validate_token(spotify_oauth)
 def rant():
+    """Generates a rant about a playlist."""
     playlist_id = request.form.get("playlist")
 
     if not playlist_id:
@@ -124,8 +137,13 @@ def rant():
 
     if not playlist:
         return apology("Playlist data not found", 400)
+    
+    try:
+        rate = llm_client.rate(playlist)
+    except Exception as e:
+        return apology("Internal error when generating rant: " + e, 500)
 
-    return render_template("rant.html", playlist=playlist.to_prompt_dict())
+    return render_template("rate.html", rate=rate)
 
 
 @app.route("/playlists")

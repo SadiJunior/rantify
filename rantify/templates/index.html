@@ -17,28 +17,32 @@
             <h1 class="display-1 fw-bold">Rantify</h1>
         </div>
         <div class="row justify-content-center column-gap-5">
-            <div class="col-lg-5 g-4 pe-3 card rant-card rounded-4">
-                <div class="card-body">
-                    <h3 class="card-title pb-3">Rant my</h3>
-                    <form id="rant-form" class="col-12 col-lg-10 d-grid mx-auto pb-2" onsubmit="return false;">
-                        <select id="playlist-select" name="playlist" required class="form-select mb-3">
-                            <option disabled selected value="">Playlist</option>
-                            {% for playlist in playlists %}
-                                <option value="{{ playlist.id }}">{{ playlist.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <div>
-                            <button id="rant-button" class="btn btn-lg btn-green rounded-5">Rant</button>
+            <div class="col-lg-5 g-4 pe-3">
+                <div class="card rant-card rounded-4 h-auto">
+                    <div class="card-body">
+                        <h3 class="card-title pb-3">Rant my</h3>
+                        <form id="rant-form" class="col-12 col-lg-10 d-grid mx-auto pb-2" onsubmit="return false;">
+                            <select id="playlist-select" name="playlist" required class="form-select mb-3">
+                                <option disabled selected value="">Playlist</option>
+                                {% for playlist in playlists %}
+                                    <option value="{{ playlist.id }}">{{ playlist.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div>
+                                <button id="rant-button" class="btn btn-lg btn-green rounded-5">Rant</button>
+                            </div>
+                        </form>
+                        <div id="rant-error" class="text-danger">
                         </div>
-                    </form>
-                    <div id="rant-error" class="text-danger">
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5 g-4 pe-3 card rant-card rounded-4">
-                <div class="card-body">
-                    <h3 class="card-title pb-3">Result</h3>
-                    <div id="rant-display">
+            <div class="col-lg-5 g-4 pe-3">
+                <div class="card rant-card rounded-4 h-100">
+                    <div class="card-body">
+                        <h3 class="card-title pb-3">Result</h3>
+                        <div id="rant-display">
+                        </div>
                     </div>
                 </div>
             </div>
