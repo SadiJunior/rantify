@@ -49,10 +49,10 @@ def index():
     spotify = SpotifyClient(access_token)
 
     user_data = spotify.get_user_profile()
-    user = SpotifyUser(user_data)
+    user = SpotifyUser.from_json(user_data)
 
     playlists_data = spotify.get_playlists(user.id)
-    playlists = [SpotifyPlaylist(playlist_data) for playlist_data in playlists_data]
+    playlists = [SpotifyPlaylist.from_json(playlist_data) for playlist_data in playlists_data]
 
     return render_template("index.html", user=user, playlists=playlists)
 
@@ -117,7 +117,7 @@ def rant():
     access_token = session_helper.get_access_token()
     spotify = SpotifyClient(access_token)
 
-    playlist = SpotifyPlaylist(
+    playlist = SpotifyPlaylist.from_json(
         spotify.get_playlist(playlist_id),
         spotify.get_playlist_tracks(playlist_id),
     )
