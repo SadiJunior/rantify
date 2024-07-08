@@ -5,6 +5,9 @@ import secrets
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import FlaskSessionCacheHandler
 
+from pydantic import BaseModel, HttpUrl
+from typing import List, Optional
+
 from flask import session
 
 
@@ -26,7 +29,7 @@ SPOTIFY_SCOPE = [
 
 def create_spotify_oauth() -> SpotifyOAuth:
     """
-    Creates the Spotify Authorization with Authorization Code Flow method
+    Creates the Spotify Authorization with Authorization Code Flow method.
 
     https://developer.spotify.com/documentation/web-api/concepts/authorization
     https://developer.spotify.com/documentation/web-api/tutorials/code-flow
@@ -41,35 +44,25 @@ def create_spotify_oauth() -> SpotifyOAuth:
 
 
 def create_state():
+    """Creates a State used for Spotify OAuth."""
     return secrets.token_urlsafe(16)
 
 
-def create_spotify_client(access_token):
-    return spotipy.Spotify(
-        auth=access_token
-    )
-
-
-def prompt_dict_keys(keys):
-    def decorator(c):
-        if not hasattr(c, "prompt_dict_keys"):
-            c.prompt_dict_keys = []
-        c.prompt_dict_keys.extend(keys)
-        return c
-    return decorator
-
-
 class SpotifyClient:
+    """Spotify Client that interacts with the Spotify API."""
 
     def __init__(self, access_token):
-        self.spotify = create_spotify_client(access_token)
+        """Creates the Spotify Client object."""
+        self.spotify = spotipy.Spotify(access_token)
 
 
     def get_user_profile(self):
+        """Gets the Spotify Current User data."""
         return self.spotify.current_user()
 
 
-    def get_playlists(self, user_id = None):
+    def get_playlists(self, user_id=None, only_user_playlists=True):
+        """Gets the Spotify Current User's Playlists data."""
         if user_id is None:
             user_id = self.get_user_profile()["id"]
 
@@ -80,17 +73,21 @@ class SpotifyClient:
             results = self.spotify.next(results)
             user_playlists.extend(results["items"])
 
-        # Only gets playlists created by user
-        user_playlists = [playlist for playlist in user_playlists if playlist["owner"]["id"] == user_id]
+        user_playlists = [playlist for playlist in user_playlists]
+
+        if only_user_playlists:
+            user_playlists = [playlist for playlist in user_playlists if playlist["owner"]["id"] == user_id]
         
         return user_playlists
 
 
     def get_playlist(self, playlist_id):
+        """Gets the Spotify Playlist data."""
         return self.spotify.playlist(playlist_id)
     
 
     def get_playlist_tracks(self, playlist_id):
+        """Gets the Spotify Playlist Tracks data."""
         results = self.spotify.playlist_tracks(playlist_id)
         if not results:
             return []
@@ -105,114 +102,204 @@ class SpotifyClient:
 
 
     def get_user_top_tracks(self):
+        """Gets the Spotify Current User's Top Tracks data."""
         return self.spotify.current_user_top_tracks()
 
 
     def get_user_top_artists(self):
+        """Gets the Spotify Current User's Top Artists data."""
         return self.spotify.current_user_top_artists()
+
+
+class SpotifyUser(BaseModel):
+    """
+    Modelates the Spotify Current User data.
     
+    https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile
+    """
+    id: Optional[str]
+    name: Optional[str]
+    country: Optional[str]
+    image_url: Optional[HttpUrl]
 
-
-class Serializable:
-
-    def __init__(self):
-        self.prompt_keys = []
-
-
-    def to_dict(self):
-        def serialize(obj):
-            if isinstance(obj, Serializable):
-                return obj.to_dict()
-            elif isinstance(obj, list):
-                return [serialize(item) for item in obj]
-            elif isinstance(obj, dict):
-                return {key: serialize(value) for key, value in obj.items()}
-            else:
-                return obj
-        
-        return serialize(self.__dict__)
-
-
-    def to_prompt_dict(self):
-        def serialize(obj):
-            if isinstance(obj, Serializable):
-                return obj.to_prompt_dict()
-            elif isinstance(obj, list):
-                return [serialize(item) for item in obj]
-            elif isinstance(obj, dict):
-                return {key: serialize(value) for key, value in obj.items() if key in self.prompt_keys}
-            else:
-                return obj
-        
-        return serialize(self.__dict__)
-
-
-class SpotifyUser(Serializable):
-
-    def __init__(self, user_data):
-        self.id = user_data.get("id")
-        self.name = user_data.get("display_name")
-        self.country = user_data.get("country")
+    @classmethod
+    def from_json(cls, user_data):
+        """Creates a SpotifyUser object from the Spotify Current User data."""
+        id = user_data.get("id")
+        name = user_data.get("display_name")
+        country = user_data.get("country")
         
         user_images = user_data.get("images")
-        self.image_url = user_images[0]["url"] if user_images else "../static/images/default-user.png"
+        image_url = user_images[0]["url"] if user_images else "../static/images/default-user.png"
 
-        super().__init__()
-        self.prompt_keys = ["name", "country"]
-        
+        return cls(
+            id=id,
+            name=name,
+            country=country,
+            image_url=image_url
+        )
 
 
-class SpotifyPlaylist(Serializable):
+class SpotifyArtist(BaseModel):
+    """
+    Model of the Spotify Artist data.
 
-    def __init__(self, playlist_data, playlist_tracks_data = None):
-        self.id = playlist_data.get("id")
-        self.name = playlist_data.get("name")
-        self.owner_id = playlist_data.get("owner").get("id")
-        self.description = playlist_data.get("description")
+    https://developer.spotify.com/documentation/web-api/reference/get-an-artist
+    """
+    id: Optional[str]
+    name: Optional[str]
+    genres: Optional[List[str]]
+    image_url: Optional[HttpUrl]
+    popularity: Optional[int]
+
+    @classmethod
+    def from_json(cls, artist_data):
+        """Creates a SpotifyArtist object from the Spotify Artist data."""
+        id = artist_data.get("id")
+        name = artist_data.get("name")
+        genres = artist_data.get("genres")
+        popularity = artist_data.get("popularity")
+
+        artist_images = artist_data.get("images")
+        image_url = artist_images[0]["url"] if artist_images else None
+
+        return cls(
+            id=id,
+            name=name,
+            genres=genres,
+            image_url=image_url,
+            popularity=popularity
+        )
+
+
+class SpotifyAlbum(BaseModel):
+    """
+    Model of the Spotify Album data.
+
+    https://developer.spotify.com/documentation/web-api/reference/get-an-album
+    """
+    id: Optional[str]
+    name: Optional[str]
+    album_type: Optional[str]
+    release_date: Optional[str]
+    release_date_precision: Optional[str]
+    total_tracks: Optional[int]
+    genres: Optional[List[str]]
+    label: Optional[str]
+    popularity: Optional[int]
+    artists: Optional[List[SpotifyArtist]]
+
+    @classmethod
+    def from_json(cls, album_data):
+        """Creates a SpotifyAlbum object from the Spotify Album data."""
+        id = album_data.get("id")
+        name = album_data.get("name")
+        album_type = album_data.get("album_type")
+        release_date = album_data.get("release_date")
+        release_date_precision = album_data.get("release_date_precision")
+        total_tracks = album_data.get("total_tracks")
+        genres = album_data.get("genres")
+        label = album_data.get("label")
+        popularity = album_data.get("popularity")
+
+        artists = [SpotifyArtist.from_json(artist_data) for artist_data in album_data.get("artists", [])]
+
+        return cls(
+            id=id,
+            name=name,
+            album_type=album_type,
+            release_date=release_date,
+            release_date_precision=release_date_precision,
+            total_tracks=total_tracks,
+            genres=genres,
+            label=label,
+            popularity=popularity,
+            artists=artists
+        )
+
+
+class SpotifyTrack(BaseModel):
+    """
+    Model of the Spotify Track data.
+
+    https://developer.spotify.com/documentation/web-api/reference/get-track
+    """
+    id: Optional[str]
+    name: Optional[str]
+    popularity: Optional[int]
+    explicit: Optional[bool]
+    artists: Optional[List[SpotifyArtist]]
+    album: Optional[SpotifyAlbum]
+    duration_ms: Optional[int]
+    is_playable: Optional[bool]
+    is_local: Optional[bool]
+
+    @classmethod
+    def from_json(cls, track_data):
+        """Creates a SpotifyTrack object from the Spotify Track data."""
+        id = track_data.get("id")
+        name = track_data.get("name")
+        popularity = track_data.get("popularity")
+        explicit = track_data.get("explicit")
+        duration_ms = track_data.get("duration_ms")
+        is_playable = track_data.get("is_playable")
+        is_local = track_data.get("is_local")
+
+        artists = [SpotifyArtist.from_json(artist_data) for artist_data in track_data.get("artists", [])]
+
+        album_data = track_data.get("album")
+        album = SpotifyAlbum.from_json(album_data)
+
+        return cls(
+            id=id,
+            name=name,
+            popularity=popularity,
+            explicit=explicit,
+            artists=artists,
+            album=album,
+            duration_ms=duration_ms,
+            is_playable=is_playable,
+            is_local=is_local
+        )
+
+
+class SpotifyPlaylist(BaseModel):
+    """
+    Model of the Spotify Playlist data.
+
+    https://developer.spotify.com/documentation/web-api/reference/get-playlist
+    """
+    id: Optional[str]
+    name: Optional[str]
+    owner_id: Optional[str]
+    description: Optional[str]
+    image_url: Optional[HttpUrl]
+    public: Optional[bool]
+    collaborative: Optional[bool]
+    tracks: Optional[List[SpotifyTrack]]
+
+    @classmethod
+    def from_json(cls, playlist_data, playlist_tracks_data=None):
+        """Creates a SpotifyPlaylist object from the Spotify Playlist data."""
+        id = playlist_data.get("id")
+        name = playlist_data.get("name")
+        owner_id = playlist_data.get("owner").get("id")
+        description = playlist_data.get("description")
+        public = playlist_data.get("public")
+        collaborative = playlist_data.get("collaborative")
         
         playlist_images = playlist_data.get("images")
-        self.image_url = playlist_images[0]["url"] if playlist_images else None
+        image_url = playlist_images[0]["url"] if playlist_images else None
 
-        self.tracks = [SpotifyTrack(track_data.get("track")) for track_data in playlist_tracks_data] if playlist_tracks_data else None
+        tracks = [SpotifyTrack.from_json(track_data.get("track")) for track_data in playlist_tracks_data] if playlist_tracks_data else []
         
-        super().__init__()
-        self.prompt_keys = ["name", "description", "tracks"]
-
-
-class SpotifyTrack(Serializable):
-
-    def __init__(self, track_data):
-        self.id = track_data.get("id")
-        self.name = track_data.get("name")
-        self.popularity = track_data.get("popularity")
-        self.is_explicit = bool(track_data.get("explicit"))
-
-        self.artists = [SpotifyArtist(artist_data) for artist_data in track_data.get("artists")]
-
-        album = track_data.get("album")
-        self.album = SpotifyAlbum(album)
-
-        super().__init__()
-        self.prompt_keys = ["name", "popularity", "artists", "album"]
-
-
-class SpotifyArtist(Serializable):
-
-    def __init__(self, artist_data):
-        self.id = artist_data.get("id")
-        self.name = artist_data.get("name")
-
-        super().__init__()
-        self.prompt_keys = ["name"]
-
-
-class SpotifyAlbum(Serializable):
-
-    def __init__(self, album_data):
-        self.id = album_data.get("id")
-        self.name = album_data.get("name")
-        self.release_date = album_data.get("release_date")
-        self.total_tracks = album_data.get("total_tracks")
-
-        super().__init__()
-        self.prompt_keys = ["name", "release_date", "total_tracks"]
+        return cls(
+            id=id,
+            name=name,
+            owner_id=owner_id,
+            description=description,
+            image_url=image_url,
+            public=public,
+            collaborative=collaborative,
+            tracks=tracks
+        )

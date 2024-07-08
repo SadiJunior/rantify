@@ -3,3 +3,8 @@ Flask-Session
 spotipy
 python-dotenv
 cryptography
+pydantic
+langchain
+langchain-openai
+openai
+tiktoken

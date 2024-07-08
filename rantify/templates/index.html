@@ -17,28 +17,32 @@
             <h1 class="display-1 fw-bold">Rantify</h1>
         </div>
         <div class="row justify-content-center column-gap-5">
-            <div class="col-lg-5 g-4 pe-3 card rant-card rounded-4">
-                <div class="card-body">
-                    <h3 class="card-title pb-3">Rant my</h3>
-                    <form id="rant-form" class="col-12 col-lg-10 d-grid mx-auto pb-2" onsubmit="return false;">
-                        <select id="playlist-select" name="playlist" required class="form-select mb-3">
-                            <option disabled selected value="">Playlist</option>
-                            {% for playlist in playlists %}
-                                <option value="{{ playlist.id }}">{{ playlist.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <div>
-                            <button id="rant-button" class="btn btn-lg btn-green rounded-5">Rant</button>
+            <div class="col-lg-5 g-4 pe-3">
+                <div class="card rant-card rounded-4 h-auto">
+                    <div class="card-body">
+                        <h3 class="card-title pb-3">Rant my</h3>
+                        <form id="rant-form" class="col-12 col-lg-10 d-grid mx-auto pb-2" onsubmit="return false;">
+                            <select id="playlist-select" name="playlist" required class="form-select mb-3">
+                                <option disabled selected value="">Playlist</option>
+                                {% for playlist in playlists %}
+                                    <option value="{{ playlist.id }}">{{ playlist.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div id="rant-buttons">
+                                <button id="rant-button" class="btn btn-lg btn-green rounded-5">Rate</button>
+                            </div>
+                        </form>
+                        <div id="rant-error" class="text-danger">
                         </div>
-                    </form>
-                    <div id="rant-error" class="text-danger">
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5 g-4 pe-3 card rant-card rounded-4">
-                <div class="card-body">
-                    <h3 class="card-title pb-3">Result</h3>
-                    <div id="rant-display">
+            <div class="col-lg-5 g-4 pe-3">
+                <div class="card rant-card rounded-4 h-100">
+                    <div class="card-body d-flex flex-column h-100">
+                        <h3 class="card-title pb-3">Result</h3>
+                        <div id="rant-display" class="d-flex flex-column mx-auto flex-grow-1 pb-2 px-3">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -66,17 +70,27 @@
                 return;
             }
 
+            var $button = $(this);
+            $button.prop("disabled", true);
+
             // Submits the rant data via jQuery AJAX.
             $.ajax({
                 url: "/rant",
                 method: "POST",
                 data: $("#rant-form").serialize(),
-                success: (data, textStatus, jqXHR) => displayRant(data),
-                error: (jqXHR, textStatus, errorThrown) => displayRantError("Failed to submit rant. Please try again."),
-                statusCode: {
-                    400: () => displayRantError("Failed to submit rant. Please try again."),
-                    200: removeRantError,
-                }
+                beforeSend: function() {
+                    displayLoadingDots();
+                },
+                success: (data, textStatus, jqXHR) => {
+                    removeLoadingDots();
+                    displayRant(data);
+                    $button.prop("disabled", false);
+                },
+                error: (jqXHR, textStatus, errorThrown) => {
+                    removeLoadingDots();
+                    displayRantError("Failed to submit rant. Please try again.");
+                    $button.prop("disabled", false);
+                },
             });
         });
     }
@@ -85,7 +99,7 @@
     // Displays the rant in index page via jQuery.
     function displayRant(rantContent) {
         $("#rant-display").html(rantContent);
-        $("#rant-error").empty();
+        removeRantError();
     }
 
 
@@ -99,6 +113,19 @@
     // Removes the rant errpr in index page via jQuery.
     function removeRantError() {
         $("#rant-error").empty();
+    }
+
+
+
+    // Displays the loading dots in index page via jQuery.
+    function displayLoadingDots() {
+        $("#rant-display").html("<div class='d-flex justify-content-center align-items-center h-100'><div class='loading-dots'></div></div>");
+    }
+
+    
+    // Removes the loading dots in index page via jQuery.
+    function removeLoadingDots() {
+        $(".loading-dots").remove();
     }
 
 </script>

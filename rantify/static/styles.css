@@ -5,8 +5,8 @@
     --color-navbar: #181818;
     --font-base: "Kanit";
     --font-base-color: #fdfdfd;
-    --color-btn-green: #00634F;
-    --color-btn-green-secondary: #1DD25E;
+    --color-green: #00634F;
+    --color-green-secondary: #1DD25E;
     --navbar-height: 70px;
 }
 
@@ -28,14 +28,39 @@ body {
 }
 
 .btn-green {
-    background-color: var(--color-btn-green);
-    border-color: var(--color-btn-green);
-    color: var(--font-base-color)
+    background-color: var(--color-green);
+    border-color: var(--color-green);
+    color: var(--font-base-color);
 }
 
 .btn-green:hover,
 .btn-green:focus {
-    background-color: var(--color-btn-green-secondary);
-    border-color: var(--color-btn-green-secondary);
-    color: var(--font-base-color)
+    background-color: var(--color-green-secondary);
+    border-color: var(--color-green-secondary);
+    color: var(--font-base-color);
+}
+
+.btn-green:disabled,
+.btn-green:active,
+.btn-green:visited {
+    background-color: var(--color-green) !important;
+    border-color: var(--color-green) !important;
+    color: var(--font-base-color) !important;
+    opacity: 0.6 !important;
+}
+
+.loading-dots {
+    width: 46px;
+    height: 8px;
+    display: block;
+    margin: 0 auto;
+    background: radial-gradient(circle closest-side, var(--font-base-color) 90%, var(--color-navbar)) 0 0/33% 100% space;
+    clip-path: inset(0 100% 0 0);
+    animation: dots-typing 2s steps(4) infinite;
+}
+ 
+ @keyframes dots-typing {
+    to {
+        clip-path: inset(0 -34% 0 0);
+     }
 }
