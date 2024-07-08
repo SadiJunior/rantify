@@ -13,7 +13,7 @@ You task is to:
     - Collaborations between artists
     - The transition between songs
     - The length of the playlist
-2. Write a review of the playlist. Keep it simple and funny, but be honest and make it feel uniquely tailored to the playlist.
+2. Write a review of the playlist. Keep it simple, funny and make it feel uniquely tailored to the playlist.
    Use metaphors, analogies, or pop culture references to make the review engaging and memorable. You can joke about playlists with either few or many tracks.
 3. Rate the playlist on a scale from 0 to 10. Be creative with your rating — feel free to exceed these limits if the playlist exceeds your expectations.
 

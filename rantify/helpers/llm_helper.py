@@ -13,6 +13,10 @@ from helpers import spotify_prompt_helper
 from helpers.spotify_helper import SpotifyPlaylist
 
 
+MAX_PROMPT_TOKENS = 12288
+MAX_RETRY_ATTEMPTS = 3
+
+
 # TODO: Put this somewhere else
 with open('./prompts/rate.md', 'r') as file:
     rate_prompt_template = file.read()
@@ -20,7 +24,7 @@ with open('./prompts/rate.md', 'r') as file:
 
 class Review(BaseModel):
     """Model of the Review data."""
-    facts: str = Field(description="The facts about the rating")
+    facts: str = Field(description="The facts about the playlist being reviewed, as a numbered list")
     review: str = Field(description="The review of the playlist")
     rating: int = Field(description="The rating score from 0 to 10")
 
@@ -40,12 +44,11 @@ class ReviewPromptManager:
 class LLMClient:
     """LLMClient object that interacts with the LLM API."""
 
-    def __init__(self, model, max_context_tokens=12288):
+    def __init__(self, model: str):
         """Creates the LLM Client object."""
         self.model = model
         self.llm = ChatOpenAI(model=model)
-        self.encoding = tiktoken.encoding_for_model(self.model)
-        self.max_context_tokens = max_context_tokens
+        self.encoding = tiktoken.encoding_for_model(model)
 
         self.rate_prompt_manager = ReviewPromptManager(rate_prompt_template)
 
@@ -64,13 +67,11 @@ class LLMClient:
         """Review the given prompt."""
         prompt_tokens = self.get_tokens(prompt)
 
-        if (len(prompt_tokens) > self.max_context_tokens):
+        if len(prompt_tokens) > MAX_PROMPT_TOKENS:
             prompt = self.adjust_prompt(prompt_tokens)
-            prompt += "... The data exceeded the maximum context tokens. Make a joke regarding the number of tracks and the fact you couldn't review all of them."
+            prompt += "... The data exceeded the maximum context tokens. Make your review based on the data until here. You might also make a joke regarding the number of tracks and the fact you couldn't review all of them."
 
-        chain = self.llm.with_retry(retry_if_exception_type=(OutputParserException, )) | parser 
-
-        return chain.invoke(prompt)
+        return self.get_parsed_response(prompt, parser)
 
 
     def get_tokens(self, string: str):
@@ -81,9 +82,27 @@ class LLMClient:
 
     def adjust_prompt(self, tokens: List[int]):
         """Adjusts the prompt to fit the maximum context tokens."""
-        if len(tokens) <= self.max_context_tokens:
+        if len(tokens) <= MAX_PROMPT_TOKENS:
             return tokens
         
-        adjusted_prompt = tokens[:self.max_context_tokens]
+        adjusted_prompt = tokens[:MAX_PROMPT_TOKENS]
 
         return self.encoding.decode(adjusted_prompt)
+    
+    
+    def get_parsed_response(self, prompt: str, parser: PydanticOutputParser):
+        """Gets the parsed response."""
+        parsed_response = None
+        retry_attempts = 0
+
+        while parsed_response is None:
+            if retry_attempts >= MAX_RETRY_ATTEMPTS:
+                raise OutputParserException("Failed to get a valid response from the LLM API.")
+
+            try:
+                response = self.llm.invoke(prompt)
+                parsed_response = parser.parse(response.content)
+            except OutputParserException:
+                retry_attempts += 1
+
+        return parsed_response

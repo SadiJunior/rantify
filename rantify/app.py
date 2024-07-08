@@ -13,6 +13,8 @@ from helpers import session_helper, spotify_helper
 from helpers.spotify_helper import SpotifyClient, SpotifyPlaylist, SpotifyUser
 from helpers.llm_helper import LLMClient
 
+from langchain.schema.output_parser import OutputParserException
+
 
 LLM_MODEL = "gpt-3.5-turbo"
 
@@ -140,8 +142,8 @@ def rant():
     
     try:
         rate = llm_client.rate(playlist)
-    except Exception as e:
-        return apology("Internal error when generating rant: " + e, 500)
+    except OutputParserException as e:
+        return apology("Internal error when generating rant: " + e.error, 500)
 
     return render_template("rate.html", rate=rate)
 
