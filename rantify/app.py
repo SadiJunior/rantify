@@ -142,8 +142,8 @@ def rant():
     
     try:
         rate = llm_client.rate(playlist)
-    except OutputParserException as e:
-        return apology("Internal error when generating rant: " + e.error, 500)
+    except OutputParserException:
+        return apology("Internal error when generating rant", 500)
 
     return render_template("rate.html", rate=rate)
 

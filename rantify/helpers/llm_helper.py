@@ -1,7 +1,7 @@
 import tiktoken
 
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Union
 
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
@@ -24,7 +24,7 @@ with open('./prompts/rate.md', 'r') as file:
 
 class Review(BaseModel):
     """Model of the Review data."""
-    facts: str = Field(description="The facts about the playlist being reviewed, as a numbered list")
+    facts: Union[str, List[str]] = Field(description="The facts about the playlist being reviewed, as a string or a numbered list")
     review: str = Field(description="The review of the playlist")
     rating: int = Field(description="The rating score from 0 to 10")
 
