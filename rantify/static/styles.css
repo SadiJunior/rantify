@@ -49,5 +49,18 @@ body {
     opacity: 0.6 !important;
 }
 
+.loading-dots {
+    width: 46px;
+    height: 8px;
+    display: block;
+    margin: 0 auto;
+    background: radial-gradient(circle closest-side, var(--font-base-color) 90%, var(--color-navbar)) 0 0/33% 100% space;
+    clip-path: inset(0 100% 0 0);
+    animation: dots-typing 2s steps(4) infinite;
 }
+ 
+ @keyframes dots-typing {
+    to {
+        clip-path: inset(0 -34% 0 0);
+     }
 }
