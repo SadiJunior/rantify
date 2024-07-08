@@ -28,8 +28,8 @@
                                     <option value="{{ playlist.id }}">{{ playlist.name }}</option>
                                 {% endfor %}
                             </select>
-                            <div>
-                                <button id="rant-button" class="btn btn-lg btn-green rounded-5">Rant</button>
+                            <div id="rant-buttons">
+                                <button id="rant-button" class="btn btn-lg btn-green rounded-5">Rate</button>
                             </div>
                         </form>
                         <div id="rant-error" class="text-danger">
@@ -70,17 +70,22 @@
                 return;
             }
 
+            var $button = $(this);
+            $button.prop("disabled", true);
+
             // Submits the rant data via jQuery AJAX.
             $.ajax({
                 url: "/rant",
                 method: "POST",
                 data: $("#rant-form").serialize(),
-                success: (data, textStatus, jqXHR) => displayRant(data),
-                error: (jqXHR, textStatus, errorThrown) => displayRantError("Failed to submit rant. Please try again."),
-                statusCode: {
-                    400: () => displayRantError("Failed to submit rant. Please try again."),
-                    200: removeRantError,
-                }
+                success: (data, textStatus, jqXHR) => {
+                    displayRant(data);
+                    $button.prop("disabled", false);
+                },
+                error: (jqXHR, textStatus, errorThrown) => {
+                    displayRantError("Failed to submit rant. Please try again.");
+                    $button.prop("disabled", false);
+                },
             });
         });
     }
@@ -89,7 +94,7 @@
     // Displays the rant in index page via jQuery.
     function displayRant(rantContent) {
         $("#rant-display").html(rantContent);
-        $("#rant-error").empty();
+        removeRantError();
     }
 
 

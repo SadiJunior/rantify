@@ -5,8 +5,8 @@
     --color-navbar: #181818;
     --font-base: "Kanit";
     --font-base-color: #fdfdfd;
-    --color-btn-green: #00634F;
-    --color-btn-green-secondary: #1DD25E;
+    --color-green: #00634F;
+    --color-green-secondary: #1DD25E;
     --navbar-height: 70px;
 }
 
@@ -28,14 +28,25 @@ body {
 }
 
 .btn-green {
-    background-color: var(--color-btn-green);
-    border-color: var(--color-btn-green);
-    color: var(--font-base-color)
+    background-color: var(--color-green);
+    border-color: var(--color-green);
+    color: var(--font-base-color);
 }
 
 .btn-green:hover,
 .btn-green:focus {
-    background-color: var(--color-btn-green-secondary);
-    border-color: var(--color-btn-green-secondary);
-    color: var(--font-base-color)
+    background-color: var(--color-green-secondary);
+    border-color: var(--color-green-secondary);
+    color: var(--font-base-color);
+}
+
+#rant-buttons .btn-green:disabled,
+#rant-buttons .btn-green:active,
+#rant-buttons .btn-green:visited {
+    background-color: var(--color-green);
+    border-color: var(--color-green);
+    color: var(--font-base-color);
+    opacity: 0.6;
+    animation: dots 1.4s steps(5, end) infinite;
+}
 }
