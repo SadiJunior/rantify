@@ -40,13 +40,14 @@ body {
     color: var(--font-base-color);
 }
 
-#rant-buttons .btn-green:disabled,
-#rant-buttons .btn-green:active,
-#rant-buttons .btn-green:visited {
-    background-color: var(--color-green);
-    border-color: var(--color-green);
-    color: var(--font-base-color);
-    opacity: 0.6;
-    animation: dots 1.4s steps(5, end) infinite;
+.btn-green:disabled,
+.btn-green:active,
+.btn-green:visited {
+    background-color: var(--color-green) !important;
+    border-color: var(--color-green) !important;
+    color: var(--font-base-color) !important;
+    opacity: 0.6 !important;
+}
+
 }
 }
