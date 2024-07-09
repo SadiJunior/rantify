@@ -291,7 +291,7 @@ class SpotifyPlaylist(BaseModel):
         playlist_images = playlist_data.get("images")
         image_url = playlist_images[0]["url"] if playlist_images else None
 
-        tracks = [SpotifyTrack.from_json(track_data.get("track")) for track_data in playlist_tracks_data] if playlist_tracks_data else []
+        tracks = [SpotifyTrack.from_json(track_data.get("track")) for track_data in playlist_tracks_data if track_data.get("track")] if playlist_tracks_data else []
         
         return cls(
             id=id,
