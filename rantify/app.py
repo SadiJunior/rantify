@@ -11,11 +11,14 @@ from spotipy import SpotifyException, SpotifyOauthError
 
 from dotenv import load_dotenv
 
-from helpers import session_helper, spotify_helper
+from langchain.schema.output_parser import OutputParserException
+
+from helpers import session_helper, spotify_helper, rant_helper
 from helpers.spotify_helper import SpotifyClient, SpotifyPlaylist, SpotifyUser
 from helpers.llm_helper import LLMClient
+from helpers.rant_helper import RantType
+from helpers.error_helper import apology
 
-from langchain.schema.output_parser import OutputParserException
 
 
 LLM_MODEL = "gpt-3.5-turbo"
@@ -128,29 +131,7 @@ def rate():
     """Generates a rate about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    if not playlist_id:
-        return apology("Playlist not found", 400)
-    
-    access_token = session_helper.get_access_token()
-    spotify = SpotifyClient(access_token)
-
-    try:
-        playlist = SpotifyPlaylist.from_json(
-            spotify.get_playlist(playlist_id),
-            spotify.get_playlist_tracks(playlist_id),
-        )
-    except SpotifyException as e:
-        return apology("Playlist data not found: " + e.msg, 400)
-
-    if not playlist:
-        return apology("Playlist data not found", 400)
-    
-    try:
-        review = llm_client.rate(playlist)
-    except OutputParserException:
-        return apology("Internal error when generating rate", 500)
-
-    return render_template("review.html", review=review)
+    return rant_helper.handle_review(llm_client, playlist_id, RantType.RATE)
 
 
 @app.route("/roast", methods=["POST"])
@@ -160,29 +141,7 @@ def roast():
     """Generates a roast about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    if not playlist_id:
-        return apology("Playlist not found", 400)
-    
-    access_token = session_helper.get_access_token()
-    spotify = SpotifyClient(access_token)
-
-    try:
-        playlist = SpotifyPlaylist.from_json(
-            spotify.get_playlist(playlist_id),
-            spotify.get_playlist_tracks(playlist_id),
-        )
-    except SpotifyException as e:
-        return apology("Playlist data not found: " + e.msg, 400)
-
-    if not playlist:
-        return apology("Playlist data not found", 400)
-    
-    try:
-        review = llm_client.roast(playlist)
-    except OutputParserException:
-        return apology("Internal error when generating roast", 500)
-
-    return render_template("review.html", review=review)
+    return rant_helper.handle_review(llm_client, playlist_id, RantType.ROAST)
 
 
 @app.route("/playlists")
@@ -231,9 +190,3 @@ def page_not_found(error):
 @app.errorhandler(405)
 def method_not_allowed(error):
     return apology("Method not allowed", error.code)
-
-
-# TODO: Put this somewhere else
-def apology(description, code=400):
-    """Render message as an apology to user."""
-    return render_template("apology.html", code=code, description=description), code
