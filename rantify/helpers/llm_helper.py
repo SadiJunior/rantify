@@ -22,6 +22,11 @@ with open('./prompts/rate.md', 'r') as file:
     rate_prompt_template = file.read()
 
 
+# TODO: Put this somewhere else
+with open('./prompts/roast.md', 'r') as file:
+    roast_prompt_template = file.read()
+
+
 class Review(BaseModel):
     """Model of the Review data."""
     facts: Union[str, List[str]] = Field(description="The facts about the playlist being reviewed, as a string or a numbered list")
@@ -33,6 +38,7 @@ class ReviewPromptManager:
     """Class to manage the Review Prompt."""
 
     def __init__(self, prompt_template: str):
+        """Creates the Review Prompt Manager object."""
         self.parser = PydanticOutputParser(pydantic_object=Review)
         self.prompt_template = PromptTemplate(
             template=prompt_template,
@@ -51,6 +57,7 @@ class LLMClient:
         self.encoding = tiktoken.encoding_for_model(model)
 
         self.rate_prompt_manager = ReviewPromptManager(rate_prompt_template)
+        self.roast_prompt_manager = ReviewPromptManager(roast_prompt_template)
 
 
     def rate(self, playlist: SpotifyPlaylist):
@@ -62,6 +69,16 @@ class LLMClient:
 
         return self.review(prompt, self.rate_prompt_manager.parser)
 
+
+    def roast(self, playlist: SpotifyPlaylist):
+        """Roasts the given playlist."""
+        playlist_csv = spotify_prompt_helper.playlist_to_csv(playlist)
+        tracks_csv = spotify_prompt_helper.tracks_to_csv(playlist.tracks)
+
+        prompt = self.roast_prompt_manager.prompt_template.format(playlist=playlist_csv, tracks=tracks_csv)
+
+        return self.review(prompt, self.roast_prompt_manager.parser)
+    
     
     def review(self, prompt: str, parser: PydanticOutputParser):
         """Review the given prompt."""

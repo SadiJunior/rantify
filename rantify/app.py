@@ -1,19 +1,24 @@
-import requests
-import spotipy
 import os
+
+from requests.exceptions import ReadTimeout
 
 from flask import (
     Flask, redirect, render_template, request, session, jsonify
 )
 from flask_session import Session
 
+from spotipy import SpotifyException, SpotifyOauthError
+
 from dotenv import load_dotenv
 
-from helpers import session_helper, spotify_helper
+from langchain.schema.output_parser import OutputParserException
+
+from helpers import session_helper, spotify_helper, rant_helper
 from helpers.spotify_helper import SpotifyClient, SpotifyPlaylist, SpotifyUser
 from helpers.llm_helper import LLMClient
+from helpers.rant_helper import RantType
+from helpers.error_helper import apology
 
-from langchain.schema.output_parser import OutputParserException
 
 
 LLM_MODEL = "gpt-3.5-turbo"
@@ -100,7 +105,7 @@ def callback():
         token_info = spotify_oauth.get_access_token(code=code)
         if not token_info:
             return apology("Could not get token info", 400)
-    except spotipy.SpotifyOauthError as error:
+    except SpotifyOauthError as error:
         return apology(f"Error getting access token: {error.error_description}", 400)
 
     session_helper.set_token_info(token_info)
@@ -119,33 +124,24 @@ def logout():
     return redirect("/")
 
 
-@app.route("/rant", methods=["POST"])
+@app.route("/rate", methods=["POST"])
 @session_helper.auth_required()
 @session_helper.validate_token(spotify_oauth)
-def rant():
-    """Generates a rant about a playlist."""
+def rate():
+    """Generates a rate about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    if not playlist_id:
-        return apology("Playlist not found", 400)
-    
-    access_token = session_helper.get_access_token()
-    spotify = SpotifyClient(access_token)
+    return rant_helper.handle_review(llm_client, playlist_id, RantType.RATE)
 
-    playlist = SpotifyPlaylist.from_json(
-        spotify.get_playlist(playlist_id),
-        spotify.get_playlist_tracks(playlist_id),
-    )
 
-    if not playlist:
-        return apology("Playlist data not found", 400)
-    
-    try:
-        rate = llm_client.rate(playlist)
-    except OutputParserException:
-        return apology("Internal error when generating rant", 500)
+@app.route("/roast", methods=["POST"])
+@session_helper.auth_required()
+@session_helper.validate_token(spotify_oauth)
+def roast():
+    """Generates a roast about a playlist."""
+    playlist_id = request.form.get("playlist")
 
-    return render_template("rate.html", rate=rate)
+    return rant_helper.handle_review(llm_client, playlist_id, RantType.ROAST)
 
 
 @app.route("/playlists")
@@ -170,17 +166,17 @@ def user():
     return jsonify(user)
 
 
-@app.errorhandler(requests.exceptions.ReadTimeout)
+@app.errorhandler(ReadTimeout)
 def read_timeout(error):
     return apology(f"Authentication error", 400)
     
 
-@app.errorhandler(spotipy.exceptions.SpotifyException)
+@app.errorhandler(SpotifyException)
 def spotify_error(error):
     return apology(f"Spotify error {error.msg}", error.http_status)
 
 
-@app.errorhandler(spotipy.oauth2.SpotifyOauthError)
+@app.errorhandler(SpotifyOauthError)
 def spotify_oauth_error(error):
     session_helper.clear_session()
     return apology(f"Authentication error: {error.error_description}", 400)
@@ -194,9 +190,3 @@ def page_not_found(error):
 @app.errorhandler(405)
 def method_not_allowed(error):
     return apology("Method not allowed", error.code)
-
-
-# TODO: Put this somewhere else
-def apology(description, code=400):
-    """Render message as an apology to user."""
-    return render_template("apology.html", code=code, description=description), code

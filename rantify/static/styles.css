@@ -6,7 +6,9 @@
     --font-base: "Kanit";
     --font-base-color: #fdfdfd;
     --color-green: #00634F;
-    --color-green-secondary: #1DD25E;
+    --color-green-secondary: #003c30;
+    --color-red: #9c2a00;
+    --color-red-secondary: #6f1200;
     --navbar-height: 70px;
 }
 
@@ -43,8 +45,30 @@ body {
 .btn-green:disabled,
 .btn-green:active,
 .btn-green:visited {
-    background-color: var(--color-green) !important;
-    border-color: var(--color-green) !important;
+    background-color: var(--color-green-secondary) !important;
+    border-color: var(--color-green-secondary) !important;
+    color: var(--font-base-color) !important;
+    opacity: 0.6 !important;
+}
+
+.btn-red {
+    background-color: var(--color-red);
+    border-color: var(--color-red);
+    color: var(--font-base-color);
+}
+
+.btn-red:hover,
+.btn-red:focus {
+    background-color: var(--color-red-secondary);
+    border-color: var(--color-red-secondary);
+    color: var(--font-base-color);
+}
+
+.btn-red:disabled,
+.btn-red:active,
+.btn-red:visited {
+    background-color: var(--color-red-secondary) !important;
+    border-color: var(--color-red-secondary) !important;
     color: var(--font-base-color) !important;
     opacity: 0.6 !important;
 }

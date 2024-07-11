@@ -28,8 +28,9 @@
                                     <option value="{{ playlist.id }}">{{ playlist.name }}</option>
                                 {% endfor %}
                             </select>
-                            <div id="rant-buttons">
-                                <button id="rant-button" class="btn btn-lg btn-green rounded-5">Rate</button>
+                            <div id="rant-buttons" class="d-flex justify-content-center">
+                                <button id="rate-button" class="rant-button btn btn-lg btn-green rounded-5 flex-grow-1 mx-3">Rate</button>
+                                <button id="roast-button" class="rant-button btn btn-lg btn-red rounded-5 flex-grow-1 mx-3">Roast</button>
                             </div>
                         </form>
                         <div id="rant-error" class="text-danger">
@@ -41,7 +42,7 @@
                 <div class="card rant-card rounded-4 h-100">
                     <div class="card-body d-flex flex-column h-100">
                         <h3 class="card-title pb-3">Result</h3>
-                        <div id="rant-display" class="d-flex flex-column mx-auto flex-grow-1 pb-2 px-3">
+                        <div id="rant-display" class="d-flex flex-column mx-auto flex-grow-1 pb-2 px-lg-3">
                         </div>
                     </div>
                 </div>
@@ -56,26 +57,38 @@
     // Runs after DOM is fully loaded.
     $(document).ready(
         function() {
-            onRantButtonClicked();
+            onRateButtonClicked();
+            onRoastButtonClicked();
         }
     );
 
 
+    // Runs when Rate Button is clicked
+    function onRateButtonClicked() {
+        onRantButtonClicked("#rate-button", "/rate");
+    }
+
+
+    // Runs when Rate Button is clicked
+    function onRoastButtonClicked() {
+        onRantButtonClicked("#roast-button", "/roast");
+    }
+
+
     // Runs when Rant Button is clicked
-    function onRantButtonClicked() {
-        $("#rant-button").click(function(eventObject) {
+    function onRantButtonClicked(buttonId, url) {
+        $(buttonId).click(function(eventObject) {
 
             if (!$("#playlist-select").val()) {
                 displayRantError("You must select a playlist.");
                 return;
             }
 
-            var $button = $(this);
-            $button.prop("disabled", true);
+            disableRantButtons();
 
             // Submits the rant data via jQuery AJAX.
             $.ajax({
-                url: "/rant",
+                url: url,
                 method: "POST",
                 data: $("#rant-form").serialize(),
                 beforeSend: function() {
@@ -84,17 +97,16 @@
                 success: (data, textStatus, jqXHR) => {
                     removeLoadingDots();
                     displayRant(data);
-                    $button.prop("disabled", false);
+                    enableRantButtons();
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     removeLoadingDots();
                     displayRantError("Failed to submit rant. Please try again.");
-                    $button.prop("disabled", false);
+                    enableRantButtons();
                 },
             });
         });
     }
-
 
     // Displays the rant in index page via jQuery.
     function displayRant(rantContent) {
@@ -116,10 +128,26 @@
     }
 
 
+    // Disables all rant buttons via jQuery.
+    function disableRantButtons() {
+        $(".rant-button").prop("disabled", true);
+    }
+
+    // Enables all rant buttons via jQuery.
+    function enableRantButtons() {
+        $(".rant-button").prop("disabled", false);
+    }
+
 
     // Displays the loading dots in index page via jQuery.
     function displayLoadingDots() {
-        $("#rant-display").html("<div class='d-flex justify-content-center align-items-center h-100'><div class='loading-dots'></div></div>");
+        const loadingDotsHtml = `
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="loading-dots"></div>
+            </div>
+        `;
+
+        $("#rant-display").html(loadingDotsHtml);
     }
 
     
