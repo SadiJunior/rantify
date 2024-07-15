@@ -11,8 +11,6 @@ from spotipy import SpotifyException, SpotifyOauthError
 
 from dotenv import load_dotenv
 
-from langchain.schema.output_parser import OutputParserException
-
 from helpers import session_helper, spotify_helper, rant_helper
 from helpers.spotify_helper import SpotifyClient, SpotifyPlaylist, SpotifyUser
 from helpers.llm_helper import LLMClient
@@ -34,7 +32,6 @@ app = Flask(__name__)
 
 # Configure application cookies
 app.secret_key = os.getenv("SECRET_KEY")
-app.config["SESSION_COOKIE_NAME"] = "spotify-login-session"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SECURE"] = True
 
@@ -125,45 +122,33 @@ def logout():
 
 
 @app.route("/rate", methods=["POST"])
-@session_helper.auth_required()
-@session_helper.validate_token(spotify_oauth)
+@session_helper.auth_required(from_ajax=True)
+@session_helper.validate_token(spotify_oauth, from_ajax=True)
 def rate():
     """Generates a rate about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    return rant_helper.handle_review(llm_client, playlist_id, RantType.RATE)
+    return rant_helper.handle_rant(llm_client, playlist_id, RantType.RATE)
 
 
 @app.route("/roast", methods=["POST"])
-@session_helper.auth_required()
-@session_helper.validate_token(spotify_oauth)
+@session_helper.auth_required(from_ajax=True)
+@session_helper.validate_token(spotify_oauth, from_ajax=True)
 def roast():
     """Generates a roast about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    return rant_helper.handle_review(llm_client, playlist_id, RantType.ROAST)
+    return rant_helper.handle_rant(llm_client, playlist_id, RantType.ROAST)
 
 
-@app.route("/playlists")
-@session_helper.auth_required()
-@session_helper.validate_token(spotify_oauth)
-def playlists():
-    access_token = session_helper.get_access_token()
-    spotify = SpotifyClient(access_token)
-    playlists = spotify.get_playlists()
-   
-    return jsonify(playlists)
+@app.route("/rhyme", methods=["POST"])
+@session_helper.auth_required(from_ajax=True)
+@session_helper.validate_token(spotify_oauth, from_ajax=True)
+def rhyme():
+    """Generates a rhyme about a playlist."""
+    playlist_id = request.form.get("playlist")
 
-
-@app.route("/user")
-@session_helper.auth_required()
-@session_helper.validate_token(spotify_oauth)
-def user():
-    access_token = session_helper.get_access_token()
-    spotify = SpotifyClient(access_token)
-    user = spotify.get_user_profile()
-
-    return jsonify(user)
+    return rant_helper.handle_rant(llm_client, playlist_id, RantType.RHYME)
 
 
 @app.errorhandler(ReadTimeout)
