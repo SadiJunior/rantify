@@ -11,8 +11,6 @@ from spotipy import SpotifyException, SpotifyOauthError
 
 from dotenv import load_dotenv
 
-from langchain.schema.output_parser import OutputParserException
-
 from helpers import session_helper, spotify_helper, rant_helper
 from helpers.spotify_helper import SpotifyClient, SpotifyPlaylist, SpotifyUser
 from helpers.llm_helper import LLMClient
@@ -151,28 +149,6 @@ def rhyme():
     playlist_id = request.form.get("playlist")
 
     return rant_helper.handle_rant(llm_client, playlist_id, RantType.RHYME)
-
-
-@app.route("/playlists")
-@session_helper.auth_required()
-@session_helper.validate_token(spotify_oauth)
-def playlists():
-    access_token = session_helper.get_access_token()
-    spotify = SpotifyClient(access_token)
-    playlists = spotify.get_playlists()
-   
-    return jsonify(playlists)
-
-
-@app.route("/user")
-@session_helper.auth_required()
-@session_helper.validate_token(spotify_oauth)
-def user():
-    access_token = session_helper.get_access_token()
-    spotify = SpotifyClient(access_token)
-    user = spotify.get_user_profile()
-
-    return jsonify(user)
 
 
 @app.errorhandler(ReadTimeout)
