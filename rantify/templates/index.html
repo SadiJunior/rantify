@@ -104,6 +104,11 @@
                     displayRantError("Failed to submit rant. Please try again.");
                     enableRantButtons();
                 },
+                statusCode: {
+                    401: () => {
+                        redirect("/login");
+                    }
+                }
             });
         });
     }
@@ -154,6 +159,12 @@
     // Removes the loading dots in index page via jQuery.
     function removeLoadingDots() {
         $(".loading-dots").remove();
+    }
+
+
+    // Redirects to the given URL.
+    function redirect(url) {
+        window.location.href = url;
     }
 
 </script>

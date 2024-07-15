@@ -24,20 +24,20 @@ def redirect_if_auth(location : str):
     return decorator_function
 
 
-def auth_required():
+def auth_required(from_ajax=False):
     """Decorate routes to require authorization"""
     def decorator_function(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             # If session does not have Token Info, isn't authorized
             if not get_token_info():
-                return redirect("/login")
+                return redirect("/login", code=401) if from_ajax else redirect("/login")
             return f(*args, **kwargs)
         return decorated_function
     return decorator_function
 
 
-def validate_token(spotify_oauth : SpotifyOAuth):
+def validate_token(spotify_oauth : SpotifyOAuth, from_ajax=False):
     """Decorate routes to validate token"""
     def decorator_function(f):
         @wraps(f)
@@ -50,9 +50,9 @@ def validate_token(spotify_oauth : SpotifyOAuth):
             try:
                 validated_token_info = spotify_oauth.validate_token(session_token_info)
                 if not validated_token_info:
-                    return redirect("/login")
+                    return redirect("/login", code=401) if from_ajax else redirect("/login")
             except SpotifyOauthError as e:
-                return redirect("/login")
+                return redirect("/login", code=401) if from_ajax else redirect("/login")
 
             set_token_info(validated_token_info)
             return f(*args, **kwargs)

@@ -124,23 +124,23 @@ def logout():
 
 
 @app.route("/rate", methods=["POST"])
-@session_helper.auth_required()
-@session_helper.validate_token(spotify_oauth)
+@session_helper.auth_required(from_ajax=True)
+@session_helper.validate_token(spotify_oauth, from_ajax=True)
 def rate():
     """Generates a rate about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    return rant_helper.handle_review(llm_client, playlist_id, RantType.RATE)
+    return rant_helper.handle_rant(llm_client, playlist_id, RantType.RATE)
 
 
 @app.route("/roast", methods=["POST"])
-@session_helper.auth_required()
-@session_helper.validate_token(spotify_oauth)
+@session_helper.auth_required(from_ajax=True)
+@session_helper.validate_token(spotify_oauth, from_ajax=True)
 def roast():
     """Generates a roast about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    return rant_helper.handle_review(llm_client, playlist_id, RantType.ROAST)
+    return rant_helper.handle_rant(llm_client, playlist_id, RantType.ROAST)
 
 
 @app.route("/playlists")
