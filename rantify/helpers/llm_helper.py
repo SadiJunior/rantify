@@ -13,30 +13,11 @@ from langchain_openai import ChatOpenAI
 
 from helpers import spotify_prompt_helper
 from helpers.spotify_helper import SpotifyPlaylist
+from prompts.prompts import PromptTemplates
 
 
 MAX_PROMPT_TOKENS = 12288
 MAX_RETRY_ATTEMPTS = 3
-
-
-# TODO: Put this somewhere else
-with open('./prompts/rate.md', 'r') as file:
-    rate_prompt_template = file.read()
-
-
-# TODO: Put this somewhere else
-with open('./prompts/roast.md', 'r') as file:
-    roast_prompt_template = file.read()
-
-
-# TODO: Put this somewhere else
-with open('./prompts/rhyme.md', 'r') as file:
-    rhyme_prompt_template = file.read()
-
-
-# TODO: Put this somewhere else
-with open('./prompts/limit_exceeded.md', 'r') as file:
-    limit_exceeded_prompt_message = file.read()
 
 
 class Review(BaseModel):
@@ -60,7 +41,7 @@ class RantPromptManager:
             parser_model: BaseModel,
             prompt_template: str,
             max_prompt_tokens: int = MAX_PROMPT_TOKENS,
-            limit_exceeded_prompt_message: str = limit_exceeded_prompt_message):
+            limit_exceeded_prompt_message: str = PromptTemplates.limit_exceeded_prompt_message):
         """Creates the Rant Prompt Manager object."""
         self.parser = PydanticOutputParser(pydantic_object=parser_model)
         self.prompt_template = PromptTemplate(
@@ -107,9 +88,9 @@ class LLMClient:
         self.llm = ChatOpenAI(model=model)
         self.encoding = tiktoken.encoding_for_model(model)
 
-        self.rate_prompt_manager = RantPromptManager(parser_model=Review, prompt_template=rate_prompt_template)
-        self.roast_prompt_manager = RantPromptManager(parser_model=Review, prompt_template=roast_prompt_template)
-        self.rhyme_prompt_manager = RantPromptManager(parser_model=Rhyme, prompt_template=rhyme_prompt_template)
+        self.rate_prompt_manager = RantPromptManager(parser_model=Review, prompt_template=PromptTemplates.rate_prompt_template)
+        self.roast_prompt_manager = RantPromptManager(parser_model=Review, prompt_template=PromptTemplates.roast_prompt_template)
+        self.rhyme_prompt_manager = RantPromptManager(parser_model=Rhyme, prompt_template=PromptTemplates.rhyme_prompt_template)
 
 
     def rate(self, playlist: SpotifyPlaylist):
