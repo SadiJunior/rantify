@@ -71,10 +71,10 @@ class RantPromptManager:
 
     def adjust_prompt(self, tokens: List[int], encoding: Encoding):
         """Adjusts the prompt to fit the maximum context tokens."""
-        if len(tokens) <= MAX_PROMPT_TOKENS:
+        if len(tokens) <= self.max_prompt_tokens:
             return tokens
         
-        adjusted_prompt = tokens[:MAX_PROMPT_TOKENS]
+        adjusted_prompt = tokens[:self.max_prompt_tokens]
 
         return encoding.decode(adjusted_prompt)
 
