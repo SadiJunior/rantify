@@ -2,7 +2,7 @@
 
 {% block navbar %}
     <a class="ms-auto">
-        <img src="{{ user.image_url if user.image_url else '../static/images/default-user.png' }}" class="rounded-circle d-inline-block align-text-top" width="48" height="48" alt="User image">
+        <img src="{{ user.image_url if user.image_url else url_for('static', filename='images/default-user.png') }}" class="rounded-circle d-inline-block align-text-top" width="48" height="48" alt="User image">
         <a href="/logout" style="color: white;">Log out</a>
     </a>
 {% endblock %}
