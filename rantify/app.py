@@ -34,7 +34,6 @@ app = Flask(__name__)
 
 # Configure application cookies
 app.secret_key = os.getenv("SECRET_KEY")
-app.config["SESSION_COOKIE_NAME"] = "spotify-login-session"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SECURE"] = True
 
