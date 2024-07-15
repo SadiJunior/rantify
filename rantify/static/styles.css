@@ -9,6 +9,8 @@
     --color-green-secondary: #003c30;
     --color-red: #9c2a00;
     --color-red-secondary: #6f1200;
+    --color-blue: #00659c;
+    --color-blue-secondary: #00376f;
     --navbar-height: 70px;
 }
 
@@ -71,6 +73,32 @@ body {
     border-color: var(--color-red-secondary) !important;
     color: var(--font-base-color) !important;
     opacity: 0.6 !important;
+}
+
+.btn-blue {
+    background-color: var(--color-blue);
+    border-color: var(--color-blue);
+    color: var(--font-base-color);
+}
+
+.btn-blue:hover,
+.btn-blue:focus {
+    background-color: var(--color-blue-secondary);
+    border-color: var(--color-blue-secondary);
+    color: var(--font-base-color);
+}
+
+.btn-blue:disabled,
+.btn-blue:active,
+.btn-blue:visited {
+    background-color: var(--color-blue-secondary) !important;
+    border-color: var(--color-blue-secondary) !important;
+    color: var(--font-base-color) !important;
+    opacity: 0.6 !important;
+}
+
+.rhyme .stanza:last-of-type {
+    margin-bottom: 0 !important;
 }
 
 .loading-dots {

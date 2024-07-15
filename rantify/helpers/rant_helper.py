@@ -14,10 +14,11 @@ class RantType(Enum):
     """The type of Rant to generate."""
     RATE = 0
     ROAST = 1
+    RHYME = 2
 
 
 # TODO: Find a better way for implementing this.
-def handle_review(llm_client, playlist_id, rant_type):
+def handle_rant(llm_client, playlist_id, rant_type):
     """Handles and generates the review of the given playlist."""
     if not playlist_id:
         return apology("Playlist not found", 400)
@@ -36,16 +37,24 @@ def handle_review(llm_client, playlist_id, rant_type):
     if not playlist:
         return apology("Playlist data not found", 400)
     
-    review = None
+    rant = None
 
     try:
         match rant_type:
             case RantType.RATE:
-                review = llm_client.rate(playlist)
+                rant = llm_client.rate(playlist)
 
             case RantType.ROAST:
-                review = llm_client.roast(playlist)
-    except OutputParserException:
-        return apology("Internal error when generating rate", 500)
+                rant = llm_client.roast(playlist)
 
-    return render_template("review.html", review=review)
+            case RantType.RHYME:
+                rant = llm_client.rhyme(playlist)
+    except OutputParserException:
+        return apology("Internal error when generating rant", 500)
+    
+    match rant_type:
+        case RantType.RATE | RantType.ROAST:
+            return render_template("review.html", review=rant)
+        case RantType.RHYME:
+            return render_template("rhyme.html", rhyme=rant)
+        

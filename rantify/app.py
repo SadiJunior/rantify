@@ -143,6 +143,16 @@ def roast():
     return rant_helper.handle_rant(llm_client, playlist_id, RantType.ROAST)
 
 
+@app.route("/rhyme", methods=["POST"])
+@session_helper.auth_required(from_ajax=True)
+@session_helper.validate_token(spotify_oauth, from_ajax=True)
+def rhyme():
+    """Generates a rhyme about a playlist."""
+    playlist_id = request.form.get("playlist")
+
+    return rant_helper.handle_rant(llm_client, playlist_id, RantType.RHYME)
+
+
 @app.route("/playlists")
 @session_helper.auth_required()
 @session_helper.validate_token(spotify_oauth)

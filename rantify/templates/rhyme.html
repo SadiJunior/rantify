@@ -1,0 +1,9 @@
+<div class="card-text rhyme">
+    {% for stanza in rhyme.stanzas %}
+        <div class="row mb-4 stanza">
+            {% for line in stanza %}
+                <p class="mb-0">{{ line }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
