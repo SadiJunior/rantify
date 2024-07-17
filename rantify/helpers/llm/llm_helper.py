@@ -2,8 +2,8 @@ import tiktoken
 
 from tiktoken import Encoding
 
-from pydantic import BaseModel, Field
-from typing import List, Union
+from pydantic import BaseModel
+from typing import List
 
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
@@ -11,26 +11,16 @@ from langchain.schema.output_parser import OutputParserException
 from langchain_openai import ChatOpenAI
 
 
-from helpers import spotify_prompt_helper
-from helpers.spotify_helper import SpotifyPlaylist
-from prompts.prompts import PromptTemplates
+from helpers.spotify import spotify_prompt_helper
+
+from models.llm_models import Review, Rhyme
+from models.spotify_models import SpotifyPlaylist
+
+from prompts import prompts
 
 
 MAX_PROMPT_TOKENS = 12288
 MAX_RETRY_ATTEMPTS = 3
-
-
-class Review(BaseModel):
-    """Model of the Review data."""
-    facts: Union[str, List[str]] = Field(description="The facts about the playlist being reviewed, as a string or a numbered list")
-    review: str = Field(description="The review of the playlist")
-    rating: int = Field(description="The rating score from 0 to 10")
-
-
-class Rhyme(BaseModel):
-    """Model of the Rhyme data."""
-    facts: Union[str, List[str]] = Field(description="The facts about the playlist being analyzed, as a string or a numbered list")
-    stanzas: List[List[str]] = Field(description="The list of stanzas for the playlist. The stanzas are composed by a list of lines.")
 
 
 class RantPromptManager:
@@ -41,7 +31,7 @@ class RantPromptManager:
             parser_model: BaseModel,
             prompt_template: str,
             max_prompt_tokens: int = MAX_PROMPT_TOKENS,
-            limit_exceeded_prompt_message: str = PromptTemplates.limit_exceeded_prompt_message):
+            limit_exceeded_prompt_message: str = prompts.limit_exceeded_prompt_message):
         """Creates the Rant Prompt Manager object."""
         self.parser = PydanticOutputParser(pydantic_object=parser_model)
         self.prompt_template = PromptTemplate(
@@ -88,27 +78,27 @@ class LLMClient:
         self.llm = ChatOpenAI(model=model)
         self.encoding = tiktoken.encoding_for_model(model)
 
-        self.rate_prompt_manager = RantPromptManager(parser_model=Review, prompt_template=PromptTemplates.rate_prompt_template)
-        self.roast_prompt_manager = RantPromptManager(parser_model=Review, prompt_template=PromptTemplates.roast_prompt_template)
-        self.rhyme_prompt_manager = RantPromptManager(parser_model=Rhyme, prompt_template=PromptTemplates.rhyme_prompt_template)
+        self.rate_prompt_manager = RantPromptManager(parser_model=Review, prompt_template=prompts.rate_prompt_template)
+        self.roast_prompt_manager = RantPromptManager(parser_model=Review, prompt_template=prompts.roast_prompt_template)
+        self.rhyme_prompt_manager = RantPromptManager(parser_model=Rhyme, prompt_template=prompts.rhyme_prompt_template)
 
 
-    def rate(self, playlist: SpotifyPlaylist):
+    def rate(self, playlist: SpotifyPlaylist) -> Review:
         """Rates the given playlist."""
         return self.rant(playlist, self.rate_prompt_manager)
 
 
-    def roast(self, playlist: SpotifyPlaylist):
+    def roast(self, playlist: SpotifyPlaylist) -> Review:
         """Roasts the given playlist."""
         return self.rant(playlist, self.roast_prompt_manager)
     
 
-    def rhyme(self, playlist: SpotifyPlaylist):
+    def rhyme(self, playlist: SpotifyPlaylist) -> Rhyme:
         """Creates a rhyme for the given playlist."""
         return self.rant(playlist, self.rhyme_prompt_manager)
 
 
-    def rant(self, playlist: SpotifyPlaylist, prompt_manager: RantPromptManager):
+    def rant(self, playlist: SpotifyPlaylist, prompt_manager: RantPromptManager) -> Review | Rhyme:
         """Rants the given playlist."""
         prompt = prompt_manager.generate_prompt(playlist, self.encoding)
 
