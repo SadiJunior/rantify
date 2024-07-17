@@ -11,12 +11,16 @@ from spotipy import SpotifyException, SpotifyOauthError
 
 from dotenv import load_dotenv
 
-from helpers import session_helper, spotify_helper, rant_helper
-from helpers.spotify_helper import SpotifyClient, SpotifyPlaylist, SpotifyUser
-from helpers.llm_helper import LLMClient
-from helpers.rant_helper import RantType
-from helpers.error_helper import apology
+from helpers.app import session_helper
+from helpers.app.app_helper import handle_rant, handle_spotify_callback
+from helpers.spotify import spotify_helper
+from helpers.spotify.spotify_helper import SpotifyClient
+from helpers.llm.llm_helper import LLMClient
 
+from helpers.app.error_helper import apology
+
+from models.spotify_models import SpotifyUser, SpotifyPlaylist
+from models.llm_models import RantType
 
 
 LLM_MODEL = "gpt-3.5-turbo"
@@ -62,11 +66,12 @@ def index():
     access_token = session_helper.get_access_token()
     spotify = SpotifyClient(access_token)
 
-    user_data = spotify.get_user_profile()
-    user = SpotifyUser.from_json(user_data)
-
-    playlists_data = spotify.get_playlists(user.id)
-    playlists = [SpotifyPlaylist.from_json(playlist_data) for playlist_data in playlists_data]
+    user = spotify.get_user_profile()
+    playlists = spotify.get_playlists(
+        user.id,
+        only_user_playlists=False,
+        include_tracks=False,
+    )
 
     return render_template("index.html", user=user, playlists=playlists)
 
@@ -83,6 +88,7 @@ def login():
 def authorize():
     """Runs Autorization Code Flow for Logging user in Spotify Account."""
     authorize_url = spotify_oauth.get_authorize_url()
+
     return redirect(authorize_url)
 
 
@@ -90,32 +96,13 @@ def authorize():
 @session_helper.redirect_if_auth("/")
 def callback():
     """Callback from Spotify Authorization Code Flow."""
-    error = request.args.get("error")
-    if error:
-        return apology("Could not authorize your Spotify Account, please try again.", 400)
-
-    code = request.args.get("code")
-    if not code:
-        return apology("Could not authorize your Spotify Account, please try again.", 400)
-
-    try:
-        token_info = spotify_oauth.get_access_token(code=code)
-        if not token_info:
-            return apology("Could not get token info", 400)
-    except SpotifyOauthError as error:
-        return apology(f"Error getting access token: {error.error_description}", 400)
-
-    session_helper.set_token_info(token_info)
-
-    return redirect("/")
+    return handle_spotify_callback(spotify_oauth)
 
 
 @app.route("/logout")
 @session_helper.auth_required()
 def logout():
     """Log user out"""
-
-    # Clears the session and forget the TOKEN INFO
     session_helper.clear_session()
 
     return redirect("/")
@@ -128,7 +115,7 @@ def rate():
     """Generates a rate about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    return rant_helper.handle_rant(llm_client, playlist_id, RantType.RATE)
+    return handle_rant(llm_client, playlist_id, RantType.RATE)
 
 
 @app.route("/roast", methods=["POST"])
@@ -138,7 +125,7 @@ def roast():
     """Generates a roast about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    return rant_helper.handle_rant(llm_client, playlist_id, RantType.ROAST)
+    return handle_rant(llm_client, playlist_id, RantType.ROAST)
 
 
 @app.route("/rhyme", methods=["POST"])
@@ -148,7 +135,7 @@ def rhyme():
     """Generates a rhyme about a playlist."""
     playlist_id = request.form.get("playlist")
 
-    return rant_helper.handle_rant(llm_client, playlist_id, RantType.RHYME)
+    return handle_rant(llm_client, playlist_id, RantType.RHYME)
 
 
 @app.errorhandler(ReadTimeout)
