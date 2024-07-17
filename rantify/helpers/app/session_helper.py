@@ -1,5 +1,3 @@
-import os
-
 from flask import redirect, session
 from functools import wraps
 from spotipy.oauth2 import SpotifyOAuth, SpotifyOauthError

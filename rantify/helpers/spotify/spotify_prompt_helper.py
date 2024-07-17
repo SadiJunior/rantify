@@ -3,7 +3,7 @@ import csv
 from typing import List
 from io import StringIO
 
-from helpers.spotify_helper import SpotifyPlaylist, SpotifyTrack
+from models.spotify_models import SpotifyPlaylist, SpotifyTrack
 
 
 def playlist_to_csv(playlist: SpotifyPlaylist):
