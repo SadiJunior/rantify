@@ -2,10 +2,10 @@ import os
 import spotipy
 import secrets
 
+from flask import session
+
 from spotipy.oauth2 import SpotifyOAuth, SpotifyOauthError
 from spotipy.cache_handler import FlaskSessionCacheHandler
-
-from flask import session
 
 from models.spotify_models import SpotifyUser, SpotifyPlaylist
 

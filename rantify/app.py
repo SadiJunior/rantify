@@ -1,25 +1,18 @@
 import os
 
 from requests.exceptions import ReadTimeout
-
-from flask import (
-    Flask, redirect, render_template, request, session, jsonify
-)
+from flask import Flask, redirect, render_template, request
 from flask_session import Session
-
 from spotipy import SpotifyException, SpotifyOauthError
-
 from dotenv import load_dotenv
 
 from helpers.app import session_helper
 from helpers.app.app_helper import handle_rant, handle_spotify_callback
+from helpers.app.error_helper import apology
 from helpers.spotify import spotify_helper
 from helpers.spotify.spotify_helper import SpotifyClient
 from helpers.llm.llm_helper import LLMClient
 
-from helpers.app.error_helper import apology
-
-from models.spotify_models import SpotifyUser, SpotifyPlaylist
 from models.llm_models import RantType
 
 
@@ -46,15 +39,15 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 # Configure server-side session
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_USE_SIGNER"] = True
-app.config["SESSION_TYPE"] = "filesystem"  # Use Redis or another backend for production
+app.config["SESSION_TYPE"] = "filesystem"
 
 
 # Initializes session
 Session(app)
 
 
+# Initialize clients
 spotify_oauth = spotify_helper.create_spotify_oauth()
-
 llm_client = LLMClient(model=LLM_MODEL)
 
 
@@ -140,25 +133,30 @@ def rhyme():
 
 @app.errorhandler(ReadTimeout)
 def read_timeout(error):
-    return apology(f"Authentication error", 400)
-    
+    """Handle read timeout errors."""
+    return apology("Authentication error", 400)
+
 
 @app.errorhandler(SpotifyException)
 def spotify_error(error):
-    return apology(f"Spotify error {error.msg}", error.http_status)
+    """Handle Spotify API errors."""
+    return apology(f"Spotify error: {error.msg}", error.http_status)
 
 
 @app.errorhandler(SpotifyOauthError)
 def spotify_oauth_error(error):
+    """Handle Spotify OAuth errors."""
     session_helper.clear_session()
     return apology(f"Authentication error: {error.error_description}", 400)
 
 
 @app.errorhandler(404)
 def page_not_found(error):
+    """Handle 404 errors."""
     return apology("Page not found", error.code)
 
 
 @app.errorhandler(405)
 def method_not_allowed(error):
+    """Handle 405 errors."""
     return apology("Method not allowed", error.code)

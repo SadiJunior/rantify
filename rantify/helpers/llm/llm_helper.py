@@ -1,15 +1,12 @@
 import tiktoken
-
 from tiktoken import Encoding
 
+from typing import List, Union
 from pydantic import BaseModel
-from typing import List
-
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.schema.output_parser import OutputParserException
 from langchain_openai import ChatOpenAI
-
 
 from helpers.spotify import spotify_prompt_helper
 
@@ -31,7 +28,8 @@ class RantPromptManager:
             parser_model: BaseModel,
             prompt_template: str,
             max_prompt_tokens: int = MAX_PROMPT_TOKENS,
-            limit_exceeded_prompt_message: str = prompts.limit_exceeded_prompt_message):
+            limit_exceeded_prompt_message: str = prompts.limit_exceeded_prompt_message
+    ):
         """Creates the Rant Prompt Manager object."""
         self.parser = PydanticOutputParser(pydantic_object=parser_model)
         self.prompt_template = PromptTemplate(
@@ -98,14 +96,14 @@ class LLMClient:
         return self.rant(playlist, self.rhyme_prompt_manager)
 
 
-    def rant(self, playlist: SpotifyPlaylist, prompt_manager: RantPromptManager) -> Review | Rhyme:
+    def rant(self, playlist: SpotifyPlaylist, prompt_manager: RantPromptManager) -> Union[Review | Rhyme]:
         """Rants the given playlist."""
         prompt = prompt_manager.generate_prompt(playlist, self.encoding)
 
         return self.get_parsed_response(prompt, prompt_manager.parser)
     
     
-    def get_parsed_response(self, prompt: str, parser: PydanticOutputParser):
+    def get_parsed_response(self, prompt: str, parser: PydanticOutputParser) -> Union[Review | Rhyme]:
         """Gets the parsed response."""
         parsed_response = None
         retry_attempts = 0

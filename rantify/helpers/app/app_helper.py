@@ -1,10 +1,8 @@
-from flask import (
-    redirect, render_template, request
-)
-
-from spotipy.oauth2 import SpotifyOAuth, SpotifyOauthError
+from flask import redirect, render_template, request
 
 from langchain.schema.output_parser import OutputParserException
+
+from spotipy.oauth2 import SpotifyOAuth, SpotifyOauthError
 
 from helpers.app import session_helper
 from helpers.app.error_helper import apology
