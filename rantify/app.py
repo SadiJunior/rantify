@@ -16,7 +16,7 @@ from helpers.llm.llm_helper import LLMClient
 from models.llm_models import RantType
 
 
-LLM_MODEL = "gpt-3.5-turbo"
+LLM_MODEL = os.getenv("OPENAI_LLM_MODEL")
 
 
 # Loads the .env file
