@@ -85,7 +85,7 @@ def authorize():
     return redirect(authorize_url)
 
 
-@app.route("/callback")
+@app.route("/spotify/callback")
 @session_helper.redirect_if_auth("/")
 def callback():
     """Callback from Spotify Authorization Code Flow."""
