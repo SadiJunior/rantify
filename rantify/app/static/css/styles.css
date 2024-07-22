@@ -2,6 +2,7 @@
 
 :root {
     --color-body: #222222;
+    --color-body-secondary: #313131;
     --color-navbar: #181818;
     --font-base: "Kanit";
     --font-base-color: #fdfdfd;
@@ -24,6 +25,24 @@ body {
 .navbar {
     height: var(--navbar-height);
     background-color: var(--color-navbar);
+}
+
+.dropdown-menu {
+    background-color: var(--color-body-secondary) !important;
+    border: none;
+}
+
+.dropdown-item {
+    color: var(--font-base-color) !important;
+}
+
+.dropdown-item:active,
+.dropdown-item:visited {
+    background-color: var(--color-navbar) !important;
+}
+
+.dropdown-toggle::after {
+    display: none;
 }
 
 .rant-card {
