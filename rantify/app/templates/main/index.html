@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block navbar %}
+
     <div class="dropdown ms-auto me-lg-2" data-bs-theme="dark">
         <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="{{ user.image_url if user.image_url else url_for('static', filename='images/default-user.png') }}" class="rounded-circle d-inline-block align-text-top" width="48" height="48" alt="User image">

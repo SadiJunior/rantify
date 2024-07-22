@@ -8,18 +8,19 @@
     --font-base-color: #fdfdfd;
     --color-green: #00634F;
     --color-green-secondary: #003c30;
+    --color-green-tertiary: #002d24;
     --color-red: #9c2a00;
     --color-red-secondary: #6f1200;
     --color-blue: #00718d;
     --color-blue-secondary: #004e61;
     --navbar-height: 70px;
+    --footer-height: 50px;
 }
 
 body {
     background-color: var(--color-body);
     font-family: var(--font-base), sans-serif;
     color: var(--font-base-color);
-    max-width: 100%;
 }
 
 .navbar {
@@ -43,6 +44,30 @@ body {
 
 .dropdown-toggle::after {
     display: none;
+}
+
+footer {
+    text-align: center;
+}
+
+.footer-data {
+    height: var(--footer-height);
+    background-color: var(--color-green-tertiary);
+}
+
+.spacer {
+    aspect-ratio: 960/200;
+    width: 100%;
+    height: auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.waves {
+    background-image: url("../images/waves.svg");
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .rant-card {
