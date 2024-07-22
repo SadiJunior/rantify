@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --color-body: #222222;
+    --color-navbar: #181818;
+    --font-base: "Kanit";
+    --font-base-color: #fdfdfd;
+    --color-green: #00634F;
+    --color-green-secondary: #003c30;
+    --color-red: #9c2a00;
+    --color-red-secondary: #6f1200;
+    --color-blue: #00718d;
+    --color-blue-secondary: #004e61;
+    --navbar-height: 70px;
+}
+
+body {
+    background-color: var(--color-body);
+    font-family: var(--font-base), sans-serif;
+    color: var(--font-base-color);
+    max-width: 100%;
+}
+
+.navbar {
+    height: var(--navbar-height);
+    background-color: var(--color-navbar);
+}
+
+.rant-card {
+    background-color: var(--color-navbar);
+    color: var(--font-base-color);
+}
+
+.btn-green {
+    background-color: var(--color-green);
+    border-color: var(--color-green);
+    color: var(--font-base-color);
+}
+
+.btn-green:hover,
+.btn-green:focus {
+    background-color: var(--color-green-secondary);
+    border-color: var(--color-green-secondary);
+    color: var(--font-base-color);
+}
+
+.btn-green:disabled,
+.btn-green:active,
+.btn-green:visited {
+    background-color: var(--color-green-secondary) !important;
+    border-color: var(--color-green-secondary) !important;
+    color: var(--font-base-color) !important;
+    opacity: 0.6 !important;
+}
+
+.btn-red {
+    background-color: var(--color-red);
+    border-color: var(--color-red);
+    color: var(--font-base-color);
+}
+
+.btn-red:hover,
+.btn-red:focus {
+    background-color: var(--color-red-secondary);
+    border-color: var(--color-red-secondary);
+    color: var(--font-base-color);
+}
+
+.btn-red:disabled,
+.btn-red:active,
+.btn-red:visited {
+    background-color: var(--color-red-secondary) !important;
+    border-color: var(--color-red-secondary) !important;
+    color: var(--font-base-color) !important;
+    opacity: 0.6 !important;
+}
+
+.btn-blue {
+    background-color: var(--color-blue);
+    border-color: var(--color-blue);
+    color: var(--font-base-color);
+}
+
+.btn-blue:hover,
+.btn-blue:focus {
+    background-color: var(--color-blue-secondary);
+    border-color: var(--color-blue-secondary);
+    color: var(--font-base-color);
+}
+
+.btn-blue:disabled,
+.btn-blue:active,
+.btn-blue:visited {
+    background-color: var(--color-blue-secondary) !important;
+    border-color: var(--color-blue-secondary) !important;
+    color: var(--font-base-color) !important;
+    opacity: 0.6 !important;
+}
+
+.rhyme .stanza:last-of-type {
+    margin-bottom: 0 !important;
+}
+
+.loading-dots {
+    width: 46px;
+    height: 8px;
+    display: block;
+    margin: 0 auto;
+    background: radial-gradient(circle closest-side, var(--font-base-color) 90%, var(--color-navbar)) 0 0/33% 100% space;
+    clip-path: inset(0 100% 0 0);
+    animation: dots-typing 2s steps(4) infinite;
+}
+ 
+ @keyframes dots-typing {
+    to {
+        clip-path: inset(0 -34% 0 0);
+     }
+}
