@@ -19,7 +19,7 @@ class SpotifyUser(BaseModel):
         name = user_data.get("display_name")
         
         user_images = user_data.get("images")
-        image_url = user_images[0]["url"] if user_images else "../static/images/default-user.png"
+        image_url = user_images[0]["url"] if user_images else None
 
         return cls(
             id=id,
