@@ -14,12 +14,18 @@
                 </div>
                 <div class="row p-2 justify-content-center">
                     <form action="/auth/spotify/authorize" method="post" class="col-8 col-lg-6 d-grid mx-auto">
-                        <button class="btn btn-lg btn-green rounded-5">Log in with Spotify</button>
+                        <button id="login-button" class="btn btn-lg btn-green rounded-5">Log in with Spotify</button>
                     </form>
+                </div>
+                <div id="loading" class="row p-5">
                 </div>
             </div>
         </div>
 
     </section>
 
+
+    <script src="{{ url_for('static', filename='js/auth.js')}}"></script>
+
 {% endblock %}
+
