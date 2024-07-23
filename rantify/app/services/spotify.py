@@ -9,9 +9,8 @@ from app.helpers.session import set_token_info
 
 def handle_spotify_callback():
     """Callback from Spotify Authorization Code Flow."""
-    state, code = SpotifyOAuth.parse_auth_response_url(request.url)
-
     try:
+        state, code = SpotifyOAuth.parse_auth_response_url(request.url)
         token_info = spotify_oauth.get_access_token(code)
     except (ValueError, SpotifyOauthError):
         return apology(f"Could not authorize your Spotify Account, please try again.", 400)
