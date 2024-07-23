@@ -6,34 +6,57 @@
 // Runs after DOM is fully loaded.
 $(document).ready(
     function() {
-        onRateButtonClicked();
-        onRoastButtonClicked();
-        onRhymeButtonClicked();
+        addEventOnRateButtonClicked();
+        addEventOnRoastButtonClicked();
+        addEventOnRhymeButtonClicked();
+        addEventOnSelectPlaylistChanged();
     }
 );
 
 
-// Runs when Rate Button is clicked
-function onRateButtonClicked() {
-    onRantButtonClicked("#rate-button", "/rant/rate");
+// Adds an event listener to the click of Rant Button
+function addEventOnRateButtonClicked() {
+    addEventOnRantButtonClicked("#rate-button", "/rant/rate");
 }
 
 
-// Runs when Rate Button is clicked
-function onRoastButtonClicked() {
-    onRantButtonClicked("#roast-button", "/rant/roast");
+// Adds an event listener to the click of Roast Button
+function addEventOnRoastButtonClicked() {
+    addEventOnRantButtonClicked("#roast-button", "/rant/roast");
 }
 
 
-// Runs when Rhyme Button is clicked
-function onRhymeButtonClicked() {
-    onRantButtonClicked("#rhyme-button", "/rant/rhyme");
+// Adds an event listener to the click of Rhyme Button
+function addEventOnRhymeButtonClicked() {
+    addEventOnRantButtonClicked("#rhyme-button", "/rant/rhyme");
 }
 
 
-// Runs when Rant Button is clicked
-function onRantButtonClicked(buttonId, url) {
-    $(buttonId).click(function(eventObject) {
+// Adds an event listener to the change of Select Playlist dropdown
+function addEventOnSelectPlaylistChanged() {
+    const playlistSelect = $("#playlist-select");
+    const playlistLink = $("#playlist-link");
+
+    const baseSpotifyUrl = "https://open.spotify.com/";
+
+    playlistSelect.change(function() {
+        const selectedPlaylistId = playlistSelect.val();
+
+        if (selectedPlaylistId) {
+            const playlistUrl = baseSpotifyUrl + "playlist/" + selectedPlaylistId;
+
+            playlistLink.attr("href", playlistUrl);
+        }
+        else {
+            playlistLink.attr("href", baseSpotifyUrl);
+        }
+    });
+}
+
+
+// Adds an event listener to the click of a Rant Button
+function addEventOnRantButtonClicked(buttonId, url) {
+    $(buttonId).click(function() {
 
         if (!$("#playlist-select").val()) {
             displayRantError("You must select a playlist.");
@@ -69,6 +92,7 @@ function onRantButtonClicked(buttonId, url) {
     });
 }
 
+
 // Displays the rant in index page via jQuery.
 function displayRant(rantContent) {
     $("#rant-display").html(rantContent);
@@ -93,6 +117,7 @@ function removeRantError() {
 function disableRantButtons() {
     $(".rant-button").prop("disabled", true);
 }
+
 
 // Enables all rant buttons via jQuery.
 function enableRantButtons() {
