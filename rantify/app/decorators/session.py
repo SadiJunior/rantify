@@ -14,7 +14,8 @@ def redirect_if_auth(location: str):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             # If user is authorized
-            if get_token_info():
+            session_token_info = get_token_info()
+            if session_token_info and not spotify_oauth.is_token_expired(session_token_info):
                 return redirect(location)
             return f(*args, **kwargs)
         return decorated_function
