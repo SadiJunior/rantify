@@ -89,8 +89,7 @@ footer {
 }
 
 .btn-green:disabled,
-.btn-green:active,
-.btn-green:visited {
+.btn-green:active {
     background-color: var(--color-green-secondary) !important;
     border-color: var(--color-green-secondary) !important;
     color: var(--font-base-color) !important;
@@ -111,8 +110,7 @@ footer {
 }
 
 .btn-red:disabled,
-.btn-red:active,
-.btn-red:visited {
+.btn-red:active {
     background-color: var(--color-red-secondary) !important;
     border-color: var(--color-red-secondary) !important;
     color: var(--font-base-color) !important;
@@ -133,8 +131,7 @@ footer {
 }
 
 .btn-blue:disabled,
-.btn-blue:active,
-.btn-blue:visited {
+.btn-blue:active {
     background-color: var(--color-blue-secondary) !important;
     border-color: var(--color-blue-secondary) !important;
     color: var(--font-base-color) !important;
