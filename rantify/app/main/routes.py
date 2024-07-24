@@ -17,7 +17,7 @@ def index():
     user = spotify.get_user_profile()
     playlists = spotify.get_playlists(
         user.id,
-        only_user_playlists=False,
+        only_user_playlists=True,
         include_tracks=False,
     )
 
