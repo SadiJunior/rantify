@@ -5,6 +5,7 @@ from flask_session import Session
 
 from config import configs_by_name
 
+from app import errors, cache
 from app.api.llm import LLMClient
 from app.api.spotify_oauth import SpotifyOAuthClient
 
@@ -35,7 +36,7 @@ def create_app(config_name="default"):
     from app.rant import bp as rant_bp
     app.register_blueprint(rant_bp, url_prefix="/rant")
 
-    from app import errors
     errors.init_app(app)
+    cache.init_app(app)
 
     return app
