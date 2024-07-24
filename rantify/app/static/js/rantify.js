@@ -141,7 +141,11 @@ function enableRantButtons() {
 function displayLoadingDots() {
     const loadingDotsHtml = `
         <div class="d-flex justify-content-center align-items-center h-100">
-            <div class="loading-dots"></div>
+            <div class="loading-dots">
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+            </div>
         </div>
     `;
 

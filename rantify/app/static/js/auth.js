@@ -21,7 +21,11 @@ function onLoginButtonClicked() {
 // Displays the loading dots in index page via jQuery.
 function displayLoadingDots() {
     const loadingDotsHtml = `
-        <div class="loading-dots"></div>
+        <div class="loading-dots">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
     `;
 
     $("#loading").html(loadingDotsHtml);

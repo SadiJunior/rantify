@@ -142,18 +142,36 @@ footer {
     margin-bottom: 0 !important;
 }
 
-.loading-dots {
-    width: 46px;
-    height: 8px;
-    display: block;
-    margin: 0 auto;
-    background: radial-gradient(circle closest-side, var(--font-base-color) 90%, var(--color-navbar)) 0 0/33% 100% space;
-    clip-path: inset(0 100% 0 0);
-    animation: dots-typing 2s steps(4) infinite;
+
+.loading-dots .loading-dot {
+    width: 0.8rem;
+    height: 0.8rem;
+    display: inline-block;
+    margin: 0.2rem;
+    background-color: var(--font-base-color);
+    border-radius: 50%;
+    animation-name: dots-loading;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+
+}
+
+.loading-dots .loading-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.loading-dots .loading-dot:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.loading-dots .loading-dot:nth-child(3) {
+    animation-delay: 0.8s;
 }
  
- @keyframes dots-typing {
-    to {
-        clip-path: inset(0 -34% 0 0);
+@keyframes dots-loading {
+    50% {
+        opacity: 0;
+        transform: scale(0.80) translateY(0.4rem);
      }
 }
