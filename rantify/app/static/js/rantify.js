@@ -10,6 +10,7 @@ $(document).ready(
         addEventOnRoastButtonClicked();
         addEventOnRhymeButtonClicked();
         addEventOnSelectPlaylistChanged();
+        showDisclaimer();
     }
 );
 
@@ -90,6 +91,17 @@ function addEventOnRantButtonClicked(buttonId, url) {
             }
         });
     });
+}
+
+
+// Shows the disclaimer via jQuery.
+function showDisclaimer() {
+    if (sessionStorage.getItem("disclaimerShown")) {
+        return;
+    }
+
+    $("#disclaimer").modal("show");
+    sessionStorage.setItem("disclaimerShown", true);
 }
 
 
