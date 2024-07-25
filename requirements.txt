@@ -1,5 +1,6 @@
 Flask==3.0.3
 Flask-Session==0.8.0
+Flask-Caching==2.3.0
 spotipy==2.24.0
 python-dotenv==1.0.1
 cryptography==42.0.8
