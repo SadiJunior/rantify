@@ -1,4 +1,5 @@
 import os
+from flask_caching.backends.filesystemcache import FileSystemCache
 
 class Config(object):
     """Set Base Flask configuration variables."""
@@ -12,7 +13,8 @@ class Config(object):
     # Session configurations
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
-    SESSION_TYPE = "filesystem"
+    SESSION_TYPE = "cachelib"
+    SESSION_CACHELIB = FileSystemCache(cache_dir='/tmp/flask_session')
 
     # LLM configurations
     LLM_MODEL = os.getenv("OPENAI_LLM_MODEL")
