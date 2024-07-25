@@ -8,3 +8,4 @@ langchain==0.2.7
 langchain-openai==0.1.15
 openai==1.35.13
 tiktoken==0.7.0
+gunicorn==22.0.0
