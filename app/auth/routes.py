@@ -14,7 +14,7 @@ def login():
     return render_template("auth/login.html")
 
 
-@bp.route("/spotify/authorize", methods=["POST"])
+@bp.route("/spotify/authorize")
 @redirect_if_auth("/")
 def authorize():
     """Runs Autorization Code Flow for Logging user in Spotify Account."""
