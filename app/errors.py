@@ -19,6 +19,7 @@ def init_app(app: Flask):
     @app.errorhandler(SpotifyException)
     def spotify_error(error):
         """Handle Spotify API errors."""
+        clear_session()
         return apology(f"Spotify error: {error.msg}", error.http_status)
 
 
