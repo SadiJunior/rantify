@@ -43,8 +43,14 @@ class ProductionConfig(Config):
     SESSION_COOKIE_SECURE = True
 
 
+class TestConfig(Config):
+    """Set Test Flask configuration variables."""
+    TESTING = True
+
+
 configs_by_name = {
     "development": DevelopmentConfig,
     "production": ProductionConfig,
+    "test": TestConfig,
     "default": DevelopmentConfig,
 }
