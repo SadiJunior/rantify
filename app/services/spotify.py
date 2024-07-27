@@ -4,7 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth, SpotifyOauthError, SpotifyStateError
 
 from app import spotify_oauth
 from app.helpers.errors import apology
-from app.helpers.session import set_token_info
+from app.helpers.session import set_token_info, pop_oauth_state
 
 
 def handle_spotify_callback():
@@ -12,7 +12,9 @@ def handle_spotify_callback():
     try:
         state, code = SpotifyOAuth.parse_auth_response_url(request.url)
 
-        if state is None or state != spotify_oauth.state:
+        session_state = pop_oauth_state()
+
+        if state is None or state != session_state:
             raise SpotifyStateError(message="Invalid state")
 
         token_info = spotify_oauth.get_access_token(code)
