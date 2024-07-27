@@ -21,7 +21,6 @@ class SpotifyOAuthClient(SpotifyOAuth):
             scope=app.config["SPOTIFY_SCOPE"],
             redirect_uri=app.config["SPOTIFY_REDIRECT_URI"],
             cache_handler=FlaskSessionCacheHandler(session),
-            state=SpotifyOAuthClient.create_state(),
         )
 
     @staticmethod
