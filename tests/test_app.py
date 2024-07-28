@@ -19,7 +19,7 @@ def test_app_has_session_cookie_name(app):
 def test_app_has_session_cache(app):
     """Test that the app has a session cache."""
     assert app.config["SESSION_TYPE"] == "cachelib"
-    
+
     cachelib = app.config["SESSION_CACHELIB"]
 
     assert isinstance(cachelib, FileSystemCache)

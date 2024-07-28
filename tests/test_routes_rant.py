@@ -1,5 +1,4 @@
 from flask.testing import FlaskClient
-from pytest_mock import MockerFixture
 
 
 def test_rant_routes_redirect_if_not_auth(client: FlaskClient, spotify_token):

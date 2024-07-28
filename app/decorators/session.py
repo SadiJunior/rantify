@@ -1,4 +1,3 @@
-
 from flask import redirect, url_for
 from functools import wraps
 
@@ -10,6 +9,7 @@ from app.helpers.session import get_token_info, set_token_info
 
 def redirect_if_auth(location: str):
     """Decorate routes to redirect if already authorized"""
+
     def decorator_function(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -18,12 +18,15 @@ def redirect_if_auth(location: str):
             if session_token_info and not spotify_oauth.is_token_expired(session_token_info):
                 return redirect(location)
             return f(*args, **kwargs)
+
         return decorated_function
+
     return decorator_function
 
 
 def auth_required(from_ajax: bool = False):
     """Decorate routes to require authorization"""
+
     def decorator_function(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -32,12 +35,15 @@ def auth_required(from_ajax: bool = False):
                 login_url = url_for("auth.login")
                 return redirect(login_url, code=401) if from_ajax else redirect(login_url)
             return f(*args, **kwargs)
+
         return decorated_function
+
     return decorator_function
 
 
-def validate_token(from_ajax: bool =False):
+def validate_token(from_ajax: bool = False):
     """Decorate routes to validate token"""
+
     def decorator_function(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -45,7 +51,7 @@ def validate_token(from_ajax: bool =False):
             session_token_info = get_token_info()
             if session_token_info and not spotify_oauth.is_token_expired(session_token_info):
                 return f(*args, **kwargs)
-        
+
             login_url = url_for("auth.login")
 
             try:
@@ -57,5 +63,7 @@ def validate_token(from_ajax: bool =False):
 
             set_token_info(validated_token_info)
             return f(*args, **kwargs)
+
         return decorated_function
+
     return decorator_function

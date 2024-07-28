@@ -11,9 +11,8 @@ def test_rant_type():
 def test_review_model():
     """Test the Review model."""
     review = Review(
-        facts="- The playlist is awesome! \n - The playlist is cool!",
-        review="The playlist is incredible!",
-        rating=8)
+        facts="- The playlist is awesome! \n - The playlist is cool!", review="The playlist is incredible!", rating=8
+    )
 
     assert review.facts == "- The playlist is awesome! \n - The playlist is cool!"
     assert review.review == "The playlist is incredible!"
@@ -22,7 +21,8 @@ def test_review_model():
     review = Review(
         facts=["1. The playlist is awesome!", "2. The playlist is cool!"],
         review="The playlist is incredible!",
-        rating=10)
+        rating=10,
+    )
 
     assert review.facts == ["1. The playlist is awesome!", "2. The playlist is cool!"]
     assert review.review == "The playlist is incredible!"
@@ -33,14 +33,16 @@ def test_rhyme_model():
     """Test the Rhyme model."""
     rhyme = Rhyme(
         facts="- The playlist is awesome! \n - The playlist is cool!",
-        stanzas=[["The playlist is incredible!", "The playlist is beautiful!"]])
+        stanzas=[["The playlist is incredible!", "The playlist is beautiful!"]],
+    )
 
     assert rhyme.facts == "- The playlist is awesome! \n - The playlist is cool!"
     assert rhyme.stanzas == [["The playlist is incredible!", "The playlist is beautiful!"]]
 
     rhyme = Rhyme(
         facts=["1. The playlist is awesome!", "2. The playlist is cool!"],
-        stanzas=[["The playlist is incredible!", "The playlist is beautiful!"]])
+        stanzas=[["The playlist is incredible!", "The playlist is beautiful!"]],
+    )
 
     assert rhyme.facts == ["1. The playlist is awesome!", "2. The playlist is cool!"]
     assert rhyme.stanzas == [["The playlist is incredible!", "The playlist is beautiful!"]]

@@ -19,7 +19,7 @@ def handle_spotify_callback():
 
         token_info = spotify_oauth.get_access_token(code)
     except (ValueError, SpotifyOauthError, SpotifyStateError):
-        return apology(f"Could not authorize your Spotify Account, please try again.", 400)
+        return apology("Could not authorize your Spotify Account, please try again.", 400)
 
     set_token_info(token_info)
 
