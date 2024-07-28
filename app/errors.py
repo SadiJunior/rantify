@@ -15,12 +15,11 @@ def init_app(app: Flask):
         """Handle read timeout errors."""
         return apology("Authentication error", 400)
 
-
     @app.errorhandler(SpotifyException)
     def spotify_error(error):
         """Handle Spotify API errors."""
+        clear_session()
         return apology(f"Spotify error: {error.msg}", error.http_status)
-
 
     @app.errorhandler(SpotifyOauthError)
     def spotify_oauth_error(error):
@@ -28,12 +27,10 @@ def init_app(app: Flask):
         clear_session()
         return apology(f"Authentication error: {error.error_description}", 400)
 
-
     @app.errorhandler(404)
     def page_not_found(error):
         """Handle 404 errors."""
         return apology("Page not found", error.code)
-
 
     @app.errorhandler(405)
     def method_not_allowed(error):

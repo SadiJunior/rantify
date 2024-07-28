@@ -36,7 +36,7 @@ def get_track_data(track: SpotifyTrack):
     """Gets the track data that will be used for prompting."""
     if track is None:
         return []
-    
+
     track_name = track.name
     artist_names = [artist.name if artist else None for artist in track.artists] if track.artists else None
     album_name = track.album.name if track.album else None

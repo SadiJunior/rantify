@@ -1,8 +1,10 @@
 import os
 from flask_caching.backends.filesystemcache import FileSystemCache
 
+
 class Config(object):
     """Set Base Flask configuration variables."""
+
     SECRET_KEY = os.getenv("SECRET_KEY")
 
     # Cookie configurations
@@ -14,7 +16,7 @@ class Config(object):
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
     SESSION_TYPE = "cachelib"
-    SESSION_CACHELIB = FileSystemCache(cache_dir='/tmp/flask_session')
+    SESSION_CACHELIB = FileSystemCache(cache_dir="/tmp/flask_session")
 
     # LLM configurations
     LLM_MODEL = os.getenv("OPENAI_LLM_MODEL")
@@ -26,25 +28,34 @@ class Config(object):
     SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
     SPOTIFY_REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI")
     SPOTIFY_SCOPE = [
-        "playlist-read-private", # Read access to user's private playlists.
-        "playlist-read-collaborative", # Include collaborative playlists when requesting a user's playlists.
-        "user-library-read", # Read access to a user's library.
+        "playlist-read-private",  # Read access to user's private playlists.
+        "playlist-read-collaborative",  # Include collaborative playlists when requesting a user's playlists.
+        "user-library-read",  # Read access to a user's library.
     ]
 
 
 class DevelopmentConfig(Config):
     """Set Development Flask configuration variables."""
+
     DEBUG = True
     TEMPLATES_AUTO_RELOAD = True
 
 
 class ProductionConfig(Config):
     """Set Production Flask configuration variables."""
+
     SESSION_COOKIE_SECURE = True
+
+
+class TestConfig(Config):
+    """Set Test Flask configuration variables."""
+
+    TESTING = True
 
 
 configs_by_name = {
     "development": DevelopmentConfig,
     "production": ProductionConfig,
+    "test": TestConfig,
     "default": DevelopmentConfig,
 }

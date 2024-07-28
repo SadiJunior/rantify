@@ -5,9 +5,10 @@ from typing import List, Optional
 class SpotifyUser(BaseModel):
     """
     Modelates the Spotify Current User data.
-    
+
     https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile
     """
+
     id: Optional[str]
     name: Optional[str]
     image_url: Optional[HttpUrl]
@@ -17,15 +18,11 @@ class SpotifyUser(BaseModel):
         """Creates a SpotifyUser object from the Spotify Current User data."""
         id = user_data.get("id")
         name = user_data.get("display_name")
-        
+
         user_images = user_data.get("images")
         image_url = user_images[0]["url"] if user_images else None
 
-        return cls(
-            id=id,
-            name=name,
-            image_url=image_url
-        )
+        return cls(id=id, name=name, image_url=image_url)
 
 
 class SpotifyArtist(BaseModel):
@@ -34,6 +31,7 @@ class SpotifyArtist(BaseModel):
 
     https://developer.spotify.com/documentation/web-api/reference/get-an-artist
     """
+
     id: Optional[str]
     name: Optional[str]
     genres: Optional[List[str]]
@@ -63,6 +61,7 @@ class SpotifyAlbum(BaseModel):
 
     https://developer.spotify.com/documentation/web-api/reference/get-an-album
     """
+
     id: Optional[str]
     name: Optional[str]
     album_type: Optional[str]
@@ -99,7 +98,7 @@ class SpotifyAlbum(BaseModel):
             genres=genres,
             label=label,
             popularity=popularity,
-            artists=artists
+            artists=artists,
         )
 
 
@@ -109,6 +108,7 @@ class SpotifyTrack(BaseModel):
 
     https://developer.spotify.com/documentation/web-api/reference/get-track
     """
+
     id: Optional[str]
     name: Optional[str]
     popularity: Optional[int]
@@ -144,7 +144,7 @@ class SpotifyTrack(BaseModel):
             album=album,
             duration_ms=duration_ms,
             is_playable=is_playable,
-            is_local=is_local
+            is_local=is_local,
         )
 
 
@@ -154,6 +154,7 @@ class SpotifyPlaylist(BaseModel):
 
     https://developer.spotify.com/documentation/web-api/reference/get-playlist
     """
+
     id: Optional[str]
     name: Optional[str]
     owner_id: Optional[str]
@@ -172,12 +173,20 @@ class SpotifyPlaylist(BaseModel):
         description = playlist_data.get("description")
         public = playlist_data.get("public")
         collaborative = playlist_data.get("collaborative")
-        
+
         playlist_images = playlist_data.get("images")
         image_url = playlist_images[0]["url"] if playlist_images else None
 
-        tracks = [SpotifyTrack.from_json(track_data.get("track")) for track_data in playlist_tracks_data if track_data.get("track")] if playlist_tracks_data else []
-        
+        tracks = (
+            [
+                SpotifyTrack.from_json(track_data.get("track"))
+                for track_data in playlist_tracks_data
+                if track_data.get("track")
+            ]
+            if playlist_tracks_data
+            else []
+        )
+
         return cls(
             id=id,
             name=name,
@@ -186,5 +195,5 @@ class SpotifyPlaylist(BaseModel):
             image_url=image_url,
             public=public,
             collaborative=collaborative,
-            tracks=tracks
+            tracks=tracks,
         )

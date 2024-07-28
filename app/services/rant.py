@@ -29,7 +29,7 @@ def generate_rant(playlist_id: str, rant_type: RantType) -> Review | Rhyme:
     """Generates a Rant for the given playlist."""
     if not playlist_id:
         raise ValueError("Playlist not specified")
-    
+
     access_token = get_access_token()
     spotify = SpotifyClient(access_token)
 
@@ -37,7 +37,7 @@ def generate_rant(playlist_id: str, rant_type: RantType) -> Review | Rhyme:
 
     if not playlist:
         raise ValueError("Playlist not found")
-    
+
     try:
         match rant_type:
             case RantType.RATE:
@@ -50,6 +50,5 @@ def generate_rant(playlist_id: str, rant_type: RantType) -> Review | Rhyme:
                 return llm_client.rhyme(playlist)
     except OutputParserException:
         raise
-    
+
     return None
-        

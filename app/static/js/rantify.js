@@ -44,7 +44,8 @@ function addEventOnSelectPlaylistChanged() {
         const selectedPlaylistId = playlistSelect.val();
 
         if (selectedPlaylistId) {
-            const playlistUrl = baseSpotifyUrl + "playlist/" + selectedPlaylistId;
+            const encodedPlaylistId = encodeURIComponent(selectedPlaylistId);
+            const playlistUrl = baseSpotifyUrl + "playlist/" + encodedPlaylistId;
 
             playlistLink.attr("href", playlistUrl);
         }
