@@ -1,4 +1,5 @@
 import pytest
+import time
 
 from flask import Flask
 
@@ -22,3 +23,18 @@ def client(app: Flask):
 def runner(app: Flask):
     """A test runner for the app's Click commands."""
     return app.test_cli_runner()
+
+
+@pytest.fixture
+def spotify_token():
+    """A dummy Spotify token payload."""
+    payload = {
+        "access_token": "dummy_access_token",
+        "token_type": "Bearer",
+        "expires_at": 3600,
+        "refresh_token": "dummy_refresh_token",
+        "scope": "playlist-read-collaborative playlist-read-private user-library-read",
+        "expires_at": time.time() + 3600,
+    }
+
+    return payload

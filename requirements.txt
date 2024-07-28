@@ -11,3 +11,4 @@ openai==1.35.13
 tiktoken==0.7.0
 gunicorn==22.0.0
 pytest==8.3.2
+pytest-mock==3.14.0
