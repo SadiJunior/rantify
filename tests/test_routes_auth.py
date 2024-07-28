@@ -47,7 +47,7 @@ def test_logout_redirect_if_not_auth(client: FlaskClient):
     response = client.get("/auth/logout")
 
     assert response.status_code == 302
-    assert response.location == "auth/login"
+    assert response.location == "/auth/login"
 
 
 def test_spotify_authorize_redirect(client: FlaskClient):

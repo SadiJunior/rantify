@@ -14,12 +14,12 @@ def test_rant_routes_redirect_if_not_auth(client: FlaskClient, spotify_token):
 
     response = client.post("/rant/rate")
     assert response.status_code == 401
-    assert response.location == "auth/login"
+    assert response.location == "/auth/login"
 
     response = client.post("/rant/roast")
     assert response.status_code == 401
-    assert response.location == "auth/login"
+    assert response.location == "/auth/login"
 
     response = client.post("/rant/rhyme")
     assert response.status_code == 401
-    assert response.location == "auth/login"
+    assert response.location == "/auth/login"
