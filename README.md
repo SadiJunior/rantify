@@ -26,6 +26,8 @@ Rantify is a web application that integrates Spotify with LLMs for generating re
 - [Spotipy](https://spotipy.readthedocs.io/) – Spotify API Integration
 - [LangChain OpenAI](https://python.langchain.com/v0.2/docs/integrations/platforms/openai/) – OpenAI API Integration
 - [LangChain](https://python.langchain.com/v0.2/docs/introduction/) – LLM prompt and output parsing
+- [Pytest](https://docs.pytest.org/en/stable/) - Unit Testing
+- [GitHub Actions](https://docs.github.com/en/actions) - CI/CD
 - [Heroku](https://www.heroku.com/) – Hosting
 
 
