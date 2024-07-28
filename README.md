@@ -61,7 +61,7 @@ python -m venv .venv
 
 ### 3. Install dependencies
 ``` shell
-pip install --upgrade pip
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
