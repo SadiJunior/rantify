@@ -31,7 +31,7 @@ def spotify_token():
     payload = {
         "access_token": "dummy_access_token",
         "token_type": "Bearer",
-        "expires_at": 3600,
+        "expires_in": 3600,
         "refresh_token": "dummy_refresh_token",
         "scope": "playlist-read-collaborative playlist-read-private user-library-read",
         "expires_at": time.time() + 3600,
