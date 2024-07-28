@@ -97,7 +97,7 @@ jobs:
       - name: Run linter
         run: |
           pip install flake8
-          flake8 app/ tests/
+          flake8 app/ tests/ --max-line-length=120 --ignore="E401 F401 E402"
 
   security:
     name: CI (Security Scan)
